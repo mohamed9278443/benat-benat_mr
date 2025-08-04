@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ShoppingCart, Star, User, LogOut } from "lucide-react";
+import { Sparkles, ShoppingCart, Star, User, LogOut, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface Product {
@@ -20,8 +21,10 @@ interface Product {
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
@@ -31,6 +34,28 @@ const Index = () => {
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
+    
+    if (user) {
+      setTimeout(() => {
+        checkIfAdmin(user);
+      }, 0);
+    }
+  };
+
+  const checkIfAdmin = async (user: SupabaseUser) => {
+    try {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (profileData?.role === 'admin') {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
   };
 
   const fetchProducts = async () => {
@@ -108,6 +133,17 @@ const Index = () => {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => navigate("/admin")}
+                    className="border-amber-300 hover:bg-amber-50"
+                  >
+                    <Settings className="h-4 w-4 ml-2" />
+                    لوحة التحكم
+                  </Button>
+                )}
                 <span className="text-sm text-muted-foreground">مرحباً، {user.email}</span>
                 <Button variant="outline" size="sm" onClick={signOut}>
                   <LogOut className="h-4 w-4 ml-2" />
@@ -115,7 +151,7 @@ const Index = () => {
                 </Button>
               </div>
             ) : (
-              <Button onClick={signInWithGoogle} variant="default">
+              <Button onClick={() => navigate("/auth")} variant="default">
                 <User className="h-4 w-4 ml-2" />
                 تسجيل الدخول
               </Button>
