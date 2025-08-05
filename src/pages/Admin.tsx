@@ -13,6 +13,7 @@ import { Plus, Edit, Trash2, Save, X, Upload, Settings, ArrowRight, Sparkles } f
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import type { User, Session } from "@supabase/supabase-js";
+import ImageUpload from "@/components/ImageUpload";
 
 interface Product {
   id: string;
@@ -409,16 +410,11 @@ const Admin = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">رابط الصورة</Label>
-                  <Input
-                    id="image_url"
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
+                <ImageUpload
+                  currentImageUrl={formData.image_url}
+                  onImageUpload={(url) => setFormData({ ...formData, image_url: url })}
+                  onImageRemove={() => setFormData({ ...formData, image_url: "" })}
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="video_url">رابط الفيديو</Label>

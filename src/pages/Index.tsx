@@ -193,11 +193,16 @@ const Index = () => {
               <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-amber-200">
                 <CardHeader className="pb-4">
                   {product.image_url && (
-                    <div className="aspect-square rounded-lg overflow-hidden mb-4">
+                    <div className="aspect-square rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-amber-50 to-orange-50">
                       <img 
                         src={product.image_url} 
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          console.error('Image failed to load:', product.image_url);
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop&crop=center';
+                        }}
+                        loading="lazy"
                       />
                     </div>
                   )}
