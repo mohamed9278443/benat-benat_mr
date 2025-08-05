@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Mail, Lock, User as UserIcon, ArrowRight } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import type { User, Session } from "@supabase/supabase-js";
@@ -144,6 +145,34 @@ const Auth = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "خطأ في تسجيل الدخول",
+          description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "خطأ في تسجيل الدخول",
+        description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md">
@@ -211,6 +240,26 @@ const Auth = () => {
                     {loading ? "جارٍ تسجيل الدخول..." : "تسجيل الدخول"}
                     <ArrowRight className="mr-2 h-4 w-4" />
                   </Button>
+                  
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-amber-200" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-muted-foreground">أو</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-amber-200 hover:bg-amber-50"
+                    onClick={handleGoogleSignIn}
+                    disabled={loading}
+                  >
+                    <FcGoogle className="ml-2 h-5 w-5" />
+                    تسجيل الدخول عبر Google
+                  </Button>
                 </form>
               </TabsContent>
 
@@ -267,6 +316,26 @@ const Auth = () => {
                   >
                     {loading ? "جارٍ إنشاء الحساب..." : "إنشاء حساب جديد"}
                     <ArrowRight className="mr-2 h-4 w-4" />
+                  </Button>
+                  
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-amber-200" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-muted-foreground">أو</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-amber-200 hover:bg-amber-50"
+                    onClick={handleGoogleSignIn}
+                    disabled={loading}
+                  >
+                    <FcGoogle className="ml-2 h-5 w-5" />
+                    إنشاء حساب عبر Google
                   </Button>
                 </form>
               </TabsContent>
