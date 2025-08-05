@@ -148,21 +148,33 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: window.location.origin,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
 
       if (error) {
+        console.error('Google OAuth Error:', error);
         toast({
           title: "خطأ في تسجيل الدخول",
           description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
           variant: "destructive",
         });
+      } else {
+        // OAuth will redirect, so we don't need to handle success here
+        toast({
+          title: "جارٍ إعادة التوجيه...",
+          description: "سيتم توجيهك إلى Google للمصادقة",
+        });
       }
     } catch (error: any) {
+      console.error('Google OAuth Catch Error:', error);
       toast({
         title: "خطأ في تسجيل الدخول",
         description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
