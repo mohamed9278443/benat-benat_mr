@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ShoppingCart, Star, User, LogOut, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { ProductActions } from "@/components/ProductActions";
+import { CartIcon } from "@/components/CartIcon";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface Product {
@@ -131,6 +133,7 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            {user && <CartIcon />}
             {user ? (
               <div className="flex items-center gap-2">
                 {isAdmin && (
@@ -225,10 +228,7 @@ const Index = () => {
                     {product.description}
                   </CardDescription>
                   <div className="flex justify-between items-center">
-                    <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                      <ShoppingCart className="h-4 w-4 ml-2" />
-                      اطلب الآن
-                    </Button>
+                    <ProductActions productId={product.id} className="flex-1" />
                     <div className="text-left">
                       <span className="text-2xl font-bold text-amber-600">
                         {product.price} ر.س

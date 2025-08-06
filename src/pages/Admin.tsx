@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import type { User, Session } from "@supabase/supabase-js";
 import ImageUpload from "@/components/ImageUpload";
+import { VideoUpload } from "@/components/VideoUpload";
 
 interface Product {
   id: string;
@@ -416,16 +417,11 @@ const Admin = () => {
                   onImageRemove={() => setFormData({ ...formData, image_url: "" })}
                 />
 
-                <div className="space-y-2">
-                  <Label htmlFor="video_url">رابط الفيديو</Label>
-                  <Input
-                    id="video_url"
-                    type="url"
-                    value={formData.video_url}
-                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                    placeholder="https://example.com/video.mp4"
-                  />
-                </div>
+                <VideoUpload
+                  currentVideoUrl={formData.video_url}
+                  onVideoUpload={(url) => setFormData({ ...formData, video_url: url })}
+                  onVideoRemove={() => setFormData({ ...formData, video_url: "" })}
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="product_link">رابط المنتج</Label>
