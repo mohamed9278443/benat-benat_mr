@@ -49,6 +49,39 @@ export type Database = {
           },
         ]
       }
+      categories: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string
+          is_active: boolean | null
+          name: string
+          name_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_active?: boolean | null
+          name: string
+          name_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+          name?: string
+          name_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       catogori: {
         Row: {
           created_at: string
@@ -186,6 +219,7 @@ export type Database = {
       products: {
         Row: {
           category: string | null
+          category_id: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -196,11 +230,14 @@ export type Database = {
           name: string
           price: number
           product_link: string | null
+          rating: number | null
+          rating_count: number | null
           updated_at: string
           video_url: string | null
         }
         Insert: {
           category?: string | null
+          category_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -211,11 +248,14 @@ export type Database = {
           name: string
           price: number
           product_link?: string | null
+          rating?: number | null
+          rating_count?: number | null
           updated_at?: string
           video_url?: string | null
         }
         Update: {
           category?: string | null
+          category_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -226,6 +266,8 @@ export type Database = {
           name?: string
           price?: number
           product_link?: string | null
+          rating?: number | null
+          rating_count?: number | null
           updated_at?: string
           video_url?: string | null
         }
@@ -266,6 +308,30 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
