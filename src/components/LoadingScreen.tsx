@@ -20,8 +20,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d11e72] animate-fade-out">
         <div className="text-center text-white">
-          <h1 className="text-6xl font-bold mb-2 animate-scale-in">بنات</h1>
-          <p className="text-2xl font-medium animate-fade-in">Banat</p>
+          <h1 className="text-6xl font-bold mb-2 animate-scale-in">بـــــــنات</h1>
+          <p className="text-2xl font-medium animate-fade-in">BENAT</p>
         </div>
       </div>
     );
@@ -30,8 +30,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d11e72]">
       <div className="text-center text-white">
-        <h1 className="text-6xl font-bold mb-2 animate-scale-in">بنات</h1>
-        <p className="text-2xl font-medium animate-fade-in">Banat</p>
+        <h1 className="text-6xl font-bold mb-2 animate-scale-in">بـــــــنات</h1>
+        <p className="text-2xl font-medium animate-fade-in">BENAT</p>
       </div>
     </div>
   );
