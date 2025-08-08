@@ -32,12 +32,12 @@ export const WhatsAppOrderButton: React.FC<WhatsAppOrderButtonProps> = ({
     items.forEach((item, index) => {
       message += `${index + 1}. ${item.product.name}\n`;
       message += `   الكمية: ${item.quantity}\n`;
-      message += `   السعر: ${item.product.price} أوقية\n`;
+      message += `   السعر: ${item.product.price.toFixed(2)} أوقية\n`;
       message += `   الرابط: ${window.location.origin}/product/${item.product_id}\n`;
       message += `\n`;
     });
     
-    message += `المبلغ الإجمالي: ${totalPrice} أوقية\n\n`;
+    message += `المبلغ الإجمالي: ${totalPrice.toFixed(2)} أوقية\n\n`;
     
     // Add customer info
     message += `معلومات العميل:\n`;

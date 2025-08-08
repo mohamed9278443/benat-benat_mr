@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useCart } from '@/contexts/CartContext';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { ImageGallery } from '@/components/ImageGallery';
+import { StarRating } from '@/components/StarRating';
 
 interface Product {
   id: string;
@@ -19,6 +20,8 @@ interface Product {
   product_link?: string;
   category: string;
   is_featured: boolean;
+  rating: number;
+  rating_count: number;
 }
 
 interface ProductImage {
@@ -172,9 +175,16 @@ export default function ProductDetails() {
                 <p className="text-muted-foreground mb-4">{product.category}</p>
               )}
               
-              <p className="text-2xl font-bold text-primary mb-6">
-                {product.price.toFixed(2)} ريال
-              </p>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-2xl font-bold text-primary">
+                  {product.price.toFixed(2)} أوقية
+                </p>
+                <StarRating 
+                  rating={product.rating || 0} 
+                  ratingCount={product.rating_count || 0}
+                  size="md"
+                />
+              </div>
             </div>
 
             {product.description && (

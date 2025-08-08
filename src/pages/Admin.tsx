@@ -9,12 +9,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Edit, Trash2, Save, X, Upload, Settings, ArrowRight, Sparkles } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload, Settings, ArrowRight, Sparkles, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import type { User, Session } from "@supabase/supabase-js";
 import ImageUpload from "@/components/ImageUpload";
 import { VideoUpload } from "@/components/VideoUpload";
+import { SiteSettingsDialog } from "@/components/SiteSettingsDialog";
 
 interface Product {
   id: string;
@@ -45,6 +46,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -341,8 +343,8 @@ const Admin = () => {
           </Card>
         </div>
 
-        {/* Add Product Button */}
-        <div className="mb-6">
+        {/* Action Buttons */}
+        <div className="mb-6 flex gap-4">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button 
@@ -474,7 +476,22 @@ const Admin = () => {
               </form>
             </DialogContent>
           </Dialog>
+          
+          <Button 
+            onClick={() => setIsSettingsDialogOpen(true)}
+            variant="outline"
+            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+          >
+            <Settings2 className="h-4 w-4 ml-2" />
+            إعدادات الموقع
+          </Button>
         </div>
+
+        {/* Site Settings Dialog */}
+        <SiteSettingsDialog 
+          open={isSettingsDialogOpen}
+          onOpenChange={setIsSettingsDialogOpen}
+        />
 
         {/* Products Table */}
         <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
