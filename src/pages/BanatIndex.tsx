@@ -389,7 +389,7 @@ const BanatIndex = () => {
             {/* Logo */}
             <div>
               <h2 className="text-2xl font-bold text-primary mb-2">{settings.site_name_ar || 'بنات'}</h2>
-              <p className="text-muted-foreground">{settings.site_name_en || 'Banat'}</p>
+              <p className="text-muted-foreground">{settings.site_name_en || 'BENAT'}</p>
             </div>
 
             {/* Quick Links */}
@@ -405,7 +405,7 @@ const BanatIndex = () => {
 
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground">
-              © 2025 متجر {settings.site_name_ar || 'بنات'}/{settings.site_name_en || 'Banat'}. جميع الحقوق محفوظة.
+              © 2025 متجر {settings.site_name_ar || 'بنات'}/{settings.site_name_en || 'BENAT'}. جميع الحقوق محفوظة.
             </p>
           </div>
         </div>
