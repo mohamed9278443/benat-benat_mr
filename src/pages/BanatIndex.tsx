@@ -10,6 +10,8 @@ import { CategoryCard } from '@/components/CategoryCard';
 import { MainVideo } from '@/components/MainVideo';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useCategories } from '@/hooks/useCategories';
+import { CategoryManagementDialog } from '@/components/CategoryManagementDialog';
+import { ProductManagementDialog } from '@/components/ProductManagementDialog';
 
 interface Product {
   id: string;
@@ -29,14 +31,45 @@ const BanatIndex = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const { categories, loading: categoriesLoading } = useCategories();
+  const { categories, loading: categoriesLoading, refetch: refetchCategories } = useCategories();
 
   useEffect(() => {
     checkUser();
     fetchProducts();
+    
+    // Real-time subscriptions for categories and products
+    const categoriesChannel = supabase
+      .channel('categories-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'categories'
+      }, () => {
+        refetchCategories();
+      })
+      .subscribe();
+
+    const productsChannel = supabase
+      .channel('products-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'products'
+      }, () => {
+        fetchProducts();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(categoriesChannel);
+      supabase.removeChannel(productsChannel);
+    };
   }, []);
 
   useEffect(() => {
@@ -148,6 +181,39 @@ const BanatIndex = () => {
     }
   };
 
+  const handleAddCategory = () => {
+    console.log('Add category clicked');
+    setEditingCategory(null);
+    setIsCategoryDialogOpen(true);
+  };
+
+  const handleEditCategory = (category: any) => {
+    console.log('Edit category clicked:', category);
+    setEditingCategory(category);
+    setIsCategoryDialogOpen(true);
+  };
+
+  const handleAddProduct = () => {
+    console.log('Add product clicked');
+    setIsProductDialogOpen(true);
+  };
+
+  const handleCategoryDialogSuccess = () => {
+    refetchCategories();
+    toast({
+      title: 'نجح العمل',
+      description: 'تم حفظ الفئة بنجاح',
+    });
+  };
+
+  const handleProductDialogSuccess = () => {
+    fetchProducts();
+    toast({
+      title: 'نجح العمل',
+      description: 'تم حفظ المنتج بنجاح',
+    });
+  };
+
   if (loading || categoriesLoading || settingsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -235,6 +301,12 @@ const BanatIndex = () => {
             <Button variant="outline" size="lg" asChild>
               <Link to="/cart">سلة المشتريات</Link>
             </Button>
+            {isAdmin && (
+              <Button variant="secondary" size="lg" onClick={handleAddProduct}>
+                <Plus className="h-4 w-4 mr-2" />
+                إضافة منتج
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -245,7 +317,7 @@ const BanatIndex = () => {
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">الفئات الرئيسية</h2>
             {isAdmin && (
-              <Button className="gap-2">
+              <Button className="gap-2" onClick={handleAddCategory}>
                 <Plus className="h-4 w-4" />
                 إضافة فئة
               </Button>
@@ -258,10 +330,7 @@ const BanatIndex = () => {
                 key={category.id}
                 category={category}
                 isAdmin={isAdmin}
-                onEdit={(cat) => {
-                  // Handle category edit
-                  console.log('Edit category:', cat);
-                }}
+                onEdit={handleEditCategory}
               />
             ))}
           </div>
@@ -341,6 +410,23 @@ const BanatIndex = () => {
           </div>
         </div>
       </footer>
+
+      {/* Category Management Dialog */}
+      <CategoryManagementDialog
+        isOpen={isCategoryDialogOpen}
+        onClose={() => setIsCategoryDialogOpen(false)}
+        category={editingCategory}
+        onSuccess={handleCategoryDialogSuccess}
+      />
+
+      {/* Product Management Dialog */}
+      <ProductManagementDialog
+        isOpen={isProductDialogOpen}
+        onClose={() => setIsProductDialogOpen(false)}
+        product={null}
+        categories={categories}
+        onSuccess={handleProductDialogSuccess}
+      />
     </div>
   );
 };
