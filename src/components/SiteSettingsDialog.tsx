@@ -155,7 +155,7 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
               type="url"
               value={formData.main_video_url}
               onChange={(e) => setFormData({ ...formData, main_video_url: e.target.value })}
-              placeholder="https://youtu.be/_AufUbQhYb4"
+              placeholder="https://youtu.be/K06DUDGkDFc?si=-xhRsWl6-iKyBPMs"
             />
           </div>
 
