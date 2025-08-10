@@ -265,7 +265,7 @@ const BanatIndex = () => {
             {/* Center - Logo */}
             <div className="text-center">
               <h1 className="text-2xl font-bold">{settings.site_name_ar || 'بنات'}</h1>
-              <p className="text-sm opacity-90">{settings.site_name_en || 'Benat'}</p>
+              <p className="text-sm opacity-90">{settings.site_name_en || 'Banat'}</p>
             </div>
 
             {/* Left side - Search */}
