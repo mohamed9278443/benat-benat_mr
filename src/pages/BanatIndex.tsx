@@ -42,7 +42,6 @@ const BanatIndex = () => {
   useEffect(() => {
     checkUser();
     fetchProducts();
-    
     // Real-time subscriptions for categories and products
     const categoriesChannel = supabase
       .channel('categories-changes')
@@ -54,7 +53,6 @@ const BanatIndex = () => {
         refetchCategories();
       })
       .subscribe();
-
     const productsChannel = supabase
       .channel('products-changes')
       .on('postgres_changes', {
@@ -65,7 +63,6 @@ const BanatIndex = () => {
         fetchProducts();
       })
       .subscribe();
-
     return () => {
       supabase.removeChannel(categoriesChannel);
       supabase.removeChannel(productsChannel);
@@ -84,14 +81,12 @@ const BanatIndex = () => {
         setIsAdmin(false);
       }
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
-    
     if (user) {
       setTimeout(() => {
         checkIfAdmin(user);
@@ -106,7 +101,6 @@ const BanatIndex = () => {
         .select('role')
         .eq('user_id', user.id)
         .single();
-      
       setIsAdmin(profileData?.role === 'admin');
     } catch (error) {
       console.error('Error checking admin status:', error);
@@ -121,7 +115,6 @@ const BanatIndex = () => {
         .eq('is_active', true)
         .eq('is_featured', true)
         .order('created_at', { ascending: false });
-
       if (error) throw error;
       setProducts(data || []);
     } catch (error) {
@@ -144,9 +137,7 @@ const BanatIndex = () => {
           redirectTo: `${window.location.origin}/`
         }
       });
-      
       if (error) throw error;
-      
       toast({
         title: 'نجح تسجيل الدخول',
         description: 'تم تسجيل الدخول بنجاح',
@@ -164,10 +155,8 @@ const BanatIndex = () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
       setUser(null);
       setIsAdmin(false);
-      
       toast({
         title: 'تم تسجيل الخروج',
         description: 'تم تسجيل الخروج بنجاح',
@@ -261,13 +250,11 @@ const BanatIndex = () => {
                 </Link>
               )}
             </div>
-
             {/* Center - Logo */}
             <div className="text-center">
               <h1 className="text-2xl font-bold">{settings.site_name_ar || 'بنات'}</h1>
               <p className="text-sm opacity-90">{settings.site_name_en || 'Benat'}</p>
             </div>
-
             {/* Left side - Search */}
             <div className="flex items-center gap-2">
               <div className="relative">
@@ -284,7 +271,6 @@ const BanatIndex = () => {
           </div>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-12">
         <div className="container mx-auto px-4 text-center">
@@ -310,7 +296,6 @@ const BanatIndex = () => {
           </div>
         </div>
       </section>
-
       {/* Categories Section */}
       <section id="categories" className="py-12">
         <div className="container mx-auto px-4">
@@ -323,7 +308,6 @@ const BanatIndex = () => {
               </Button>
             )}
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.map((category) => (
               <CategoryCard
@@ -336,7 +320,6 @@ const BanatIndex = () => {
           </div>
         </div>
       </section>
-
       {/* Main Video Section */}
       {settings.main_video_url && (
         <section className="py-12 bg-accent/30">
@@ -345,7 +328,6 @@ const BanatIndex = () => {
               <h2 className="text-3xl font-bold text-foreground mb-4">فيديو توضيحي</h2>
               <p className="text-muted-foreground">تعرفي أكثر على منتجاتنا</p>
             </div>
-            
             <div className="mt-8">
               <MainVideo 
                 videoUrl={settings.main_video_url} 
@@ -355,7 +337,6 @@ const BanatIndex = () => {
           </div>
         </section>
       )}
-
       {/* Footer */}
       <footer className="bg-muted py-12 mt-16">
         <div className="container mx-auto px-4">
@@ -385,13 +366,11 @@ const BanatIndex = () => {
                 </div>
               </div>
             </div>
-
             {/* Logo */}
             <div>
               <h2 className="text-2xl font-bold text-primary mb-2">{settings.site_name_ar || 'بنات'}</h2>
               <p className="text-muted-foreground">{settings.site_name_en || 'BENAT'}</p>
             </div>
-
             {/* Quick Links */}
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">روابط سريعة</h3>
@@ -402,7 +381,6 @@ const BanatIndex = () => {
               </div>
             </div>
           </div>
-
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground">
               © 2025 متجر {settings.site_name_ar || 'بنات'}/{settings.site_name_en || 'BENAT'}. جميع الحقوق محفوظة.
@@ -410,7 +388,6 @@ const BanatIndex = () => {
           </div>
         </div>
       </footer>
-
       {/* Category Management Dialog */}
       <CategoryManagementDialog
         isOpen={isCategoryDialogOpen}
@@ -418,7 +395,6 @@ const BanatIndex = () => {
         category={editingCategory}
         onSuccess={handleCategoryDialogSuccess}
       />
-
       {/* Product Management Dialog */}
       <ProductManagementDialog
         isOpen={isProductDialogOpen}
