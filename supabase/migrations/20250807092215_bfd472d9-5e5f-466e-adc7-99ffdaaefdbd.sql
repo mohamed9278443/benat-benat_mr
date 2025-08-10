@@ -88,6 +88,6 @@ INSERT INTO public.site_settings (setting_key, setting_value) VALUES
 ('whatsapp_number', '+222 49055137'),
 ('email', 'moubarakouhoussein@gmail.com'),
 ('location_url', 'https://maps.app.goo.gl/vE3k4Ts1shPzQmNd7'),
-('main_video_url', 'https://youtu.be/_AufUbQhYb4'),
+('main_video_url', 'https://youtu.be/K06DUDGkDFc?si=-xhRsWl6-iKyBPMs'),
 ('primary_color', '#d11e72'),
 ('currency', 'أوقية موريتانية');
