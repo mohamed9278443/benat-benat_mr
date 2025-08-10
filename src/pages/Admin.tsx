@@ -537,14 +537,14 @@ const Admin = () => {
                           </div>
                           
                           <div className="space-y-2">
-                            <Label htmlFor="price">السعر (ر.س) *</Label>
+                            <Label htmlFor="price">السعر (أوقية) *</Label>
                             <Input
                               id="price"
                               type="number"
                               step="0.01"
                               value={formData.price}
                               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                              placeholder="299.99"
+                              placeholder="0"
                               required
                             />
                           </div>
