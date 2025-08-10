@@ -701,7 +701,7 @@ const Admin = () => {
                           </td>
                           <td className="p-4">{product.category || "غير محدد"}</td>
                           <td className="p-4 font-semibold text-amber-600">
-                            {product.price} ر.س
+                            {product.price} أوقية
                           </td>
                           <td className="p-4">
                             <Badge variant={product.is_active ? "default" : "secondary"}>
