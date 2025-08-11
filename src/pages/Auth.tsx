@@ -189,7 +189,6 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex flex-col justify-center items-center mb-4">
-            <Sparkles className="h-10 w-10 text-amber-600 mb-3" />
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center justify-center">
