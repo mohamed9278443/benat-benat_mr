@@ -187,16 +187,31 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex justify-center items-center gap-2 mb-4">
-            <Sparkles className="h-10 w-10 text-amber-600" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-              عطور الجزيرة العربية
-            </h1>
-          </div>
-          <p className="text-muted-foreground">مرحباً بك في عالم العطور الفاخرة</p>
+  <div className="w-full max-w-md">
+    <div className="text-center mb-8">
+      <div className="flex flex-col justify-center items-center gap-1 mb-4">
+        <Sparkles className="h-10 w-10 text-amber-600" />
+        
+        {/* العنوان مع التظليل */}
+        <div className="relative">
+          <h1 className="text-3xl font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
+            بــــــنات
+          </h1>
+          <h2 className="text-2xl font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
+            BENAT
+          </h2>
+          
+          {/* التظليل باللون #d11e72 */}
+          <div className="absolute inset-0 bg-[#d11e72] rounded-lg -z-10 transform translate-y-1 translate-x-1"></div>
+          <div className="absolute inset-0 bg-[#d11e72] rounded-lg -z-10"></div>
         </div>
+      </div>
+      
+      {/* النص التحتي باللون الأسود */}
+      <p className="text-black font-medium">
+        مرحبا بكم في بنات/benat
+      </p>
+    </div>
 
         <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
           <CardHeader>
