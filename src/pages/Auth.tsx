@@ -187,7 +187,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
-  <d<div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
   <div className="w-full max-w-md">
     <div className="text-center mb-8">
       <div className="flex flex-col justify-center items-center mb-4">
@@ -200,21 +199,24 @@ const Auth = () => {
             <div className="bg-[#d11e72] rounded-full w-44 h-44 flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.1)]"></div>
           </div>
           
-          {/* النص في وسط الدائرة بدون الخط الفاصل */}
+          {/* النص في وسط الدائرة */}
           <div className="relative z-10 flex flex-col items-center justify-center w-44 h-44">
             <h1 className="text-3xl font-bold text-white">
               بــــــنات
             </h1>
-            <h2 className="text-xl font-semibold text-white tracking-wider mt-1">
+            <div className="h-px w-16 bg-white/70 my-1"></div> {/* خط فاصل رفيع */}
+            <h2 className="text-xl font-semibold text-white tracking-wider">
               BENAT
             </h2>
           </div>
         </div>
       </div>
       
-      {/* النص التحتي المعدل */}
+      {/* النص التحتي */}
       <p className="text-gray-800 font-medium mt-4">
-        مرحبا بكم في بــــــنات_benat
+        مرحبا بكم في <span className="font-bold">بنات</span>
+        <span className="mx-1">/</span>
+        <span className="font-bold">BENAT</span>
       </p>
     </div>
     
