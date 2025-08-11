@@ -189,27 +189,30 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
   <div className="w-full max-w-md">
     <div className="text-center mb-8">
-      <div className="flex flex-col justify-center items-center gap-1 mb-4">
-        <Sparkles className="h-10 w-10 text-amber-600" />
+      <div className="flex flex-col justify-center items-center mb-4">
+        <Sparkles className="h-10 w-10 text-amber-600 mb-2" />
         
-        {/* العنوان مع التظليل */}
-        <div className="relative">
-          <h1 className="text-3xl font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
-            بــــــنات
-          </h1>
-          <h2 className="text-2xl font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
-            BENAT
-          </h2>
+        {/* العنوان مع التصميم المحسن */}
+        <div className="relative inline-block mb-3">
+          <div className="bg-[#d11e72] rounded-xl px-6 py-3 transform rotate-[-2deg] shadow-lg">
+            <h1 className="text-4xl font-extrabold text-white tracking-wide">
+              بــــــنات
+            </h1>
+            <h2 className="text-2xl font-bold text-white opacity-90 tracking-wider">
+              BENAT
+            </h2>
+          </div>
           
-          {/* التظليل باللون #d11e72 */}
-          <div className="absolute inset-0 bg-[#d11e72] rounded-lg -z-10 transform translate-y-1 translate-x-1"></div>
-          <div className="absolute inset-0 bg-[#d11e72] rounded-lg -z-10"></div>
+          {/* تأثير الظل */}
+          <div className="absolute inset-0 bg-[#d11e72] rounded-xl opacity-60 blur-sm -z-10 transform translate-y-1 translate-x-1 rotate-[-3deg]"></div>
         </div>
       </div>
       
-      {/* النص التحتي باللون الأسود */}
-      <p className="text-black font-medium">
-        مرحبا بكم في بنات/benat
+      {/* النص التحتي باللون الأسود مع تحسينات */}
+      <p className="text-gray-800 font-medium text-lg mt-4">
+        مرحبا بكم في <span className="font-bold text-[#d11e72]">بنات</span>
+        <span className="mx-1">/</span>
+        <span className="font-bold text-[#d11e72]">BENAT</span>
       </p>
     </div>
 
