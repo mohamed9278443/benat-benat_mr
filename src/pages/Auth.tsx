@@ -165,44 +165,25 @@ const Auth = () => {
 
   // تمت إضافة الدالة المفقودة هنا
   const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        }
-      });
-
-      if (error) {
-        console.error('Google OAuth Error:', error);
-        toast({
-          title: "خطأ في تسجيل الدخول",
-          description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "جارٍ إعادة التوجيه...",
-          description: "سيتم توجيهك إلى Google للمصادقة",
-        });
+  setLoading(true);
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/callback`,
       }
-    } catch (error: any) {
-      console.error('Google OAuth Catch Error:', error);
-      toast({
-        title: "خطأ في تسجيل الدخول",
-        description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    });
+    if (error) throw error;
+  } catch (error: any) {
+    toast({
+      title: "خطأ في التسجيل",
+      description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md">
