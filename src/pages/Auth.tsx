@@ -165,25 +165,18 @@ const Auth = () => {
 
   // تمت إضافة الدالة المفقودة هنا
   const handleGoogleSignIn = async () => {
-  setLoading(true);
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/callback`,
-      }
-    });
-    if (error) throw error;
-  } catch (error: any) {
-    toast({
-      title: "خطأ في التسجيل",
-      description: error.message || "حدث خطأ أثناء تسجيل الدخول عبر Google",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        }
+      });
 
       if (error) {
         console.error('Google OAuth Error:', error);
