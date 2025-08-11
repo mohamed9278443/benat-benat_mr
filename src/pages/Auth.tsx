@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Mail, Lock, User as UserIcon, ArrowRight } from "lucide-react";
+import { Sparkles, Mail, Lock, User as UserIcon, ArrowRight, Eye, EyeOff } from "lucide-react"; // تمت إضافة أيقونات Eye و EyeOff
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,8 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false); // حالة إظهار كلمة المرور لتسجيل الدخول
+  const [showSignupPassword, setShowSignupPassword] = useState(false); // حالة إظهار كلمة المرور للتسجيل
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -187,36 +189,36 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4" dir="rtl">
-  <div className="w-full max-w-md">
-    <div className="text-center mb-8">
-      <div className="flex flex-col justify-center items-center mb-4">
-        <Sparkles className="h-10 w-10 text-amber-600 mb-3" />
-        
-        {/* العنوان داخل دائرة أنيقة */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            {/* الدائرة الخلفية مع ظل خفيف جدًا */}
-            <div className="bg-[#d11e72] rounded-full w-44 h-44 flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.1)]"></div>
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex flex-col justify-center items-center mb-4">
+            <Sparkles className="h-10 w-10 text-amber-600 mb-3" />
+            
+            {/* العنوان داخل دائرة أنيقة */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* الدائرة الخلفية مع ظل خفيف جدًا */}
+                <div className="bg-[#d11e72] rounded-full w-44 h-44 flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.1)]"></div>
+              </div>
+              
+              {/* النص في وسط الدائرة بدون الخط الفاصل */}
+              <div className="relative z-10 flex flex-col items-center justify-center w-44 h-44">
+                <h1 className="text-3xl font-bold text-white">
+                  بــــــنات
+                </h1>
+                <h2 className="text-xl font-semibold text-white tracking-wider mt-1">
+                  BENAT
+                </h2>
+              </div>
+            </div>
           </div>
           
-          {/* النص في وسط الدائرة بدون الخط الفاصل */}
-          <div className="relative z-10 flex flex-col items-center justify-center w-44 h-44">
-            <h1 className="text-3xl font-bold text-white">
-              بــــــنات
-            </h1>
-            <h2 className="text-xl font-semibold text-white tracking-wider mt-1">
-              BENAT
-            </h2>
-          </div>
+          {/* النص التحتي المعدل */}
+          <p className="text-gray-800 font-medium mt-4">
+            مرحبا بكم في بــــــنات_benat
+          </p>
         </div>
-      </div>
-      
-      {/* النص التحتي المعدل */}
-      <p className="text-gray-800 font-medium mt-4">
-        مرحبا بكم في بــــــنات_benat
-      </p>
-    </div>
-    
+        
         <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
           <CardHeader>
             <CardTitle className="text-center text-2xl">تسجيل الدخول</CardTitle>
@@ -254,13 +256,27 @@ const Auth = () => {
                       <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signin-password"
-                        type="password"
+                        type={showLoginPassword ? "text" : "password"} // تغيير النوع بناءً على الحالة
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pr-10"
                         placeholder="••••••••"
                         required
                       />
+                      {/* زر إظهار/إخفاء كلمة المرور */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                      >
+                        {showLoginPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
                     </div>
                   </div>
                   <Button 
@@ -331,13 +347,27 @@ const Auth = () => {
                       <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-password"
-                        type="password"
+                        type={showSignupPassword ? "text" : "password"} // تغيير النوع بناءً على الحالة
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pr-10"
                         placeholder="••••••••"
                         required
                       />
+                      {/* زر إظهار/إخفاء كلمة المرور */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                      >
+                        {showSignupPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
                     </div>
                   </div>
                   <Button 
