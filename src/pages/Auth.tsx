@@ -199,24 +199,21 @@ const Auth = () => {
             <div className="bg-[#d11e72] rounded-full w-44 h-44 flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.1)]"></div>
           </div>
           
-          {/* النص في وسط الدائرة */}
+          {/* النص في وسط الدائرة بدون الخط الفاصل */}
           <div className="relative z-10 flex flex-col items-center justify-center w-44 h-44">
             <h1 className="text-3xl font-bold text-white">
               بــــــنات
             </h1>
-            <div className="h-px w-16 bg-white/70 my-1"></div> {/* خط فاصل رفيع */}
-            <h2 className="text-xl font-semibold text-white tracking-wider">
+            <h2 className="text-xl font-semibold text-white tracking-wider mt-1">
               BENAT
             </h2>
           </div>
         </div>
       </div>
       
-      {/* النص التحتي */}
+      {/* النص التحتي المعدل */}
       <p className="text-gray-800 font-medium mt-4">
-        مرحبا بكم في <span className="font-bold">بنات</span>
-        <span className="mx-1">/</span>
-        <span className="font-bold">BENAT</span>
+        مرحبا بكم في بــــــنات_benat
       </p>
     </div>
     
