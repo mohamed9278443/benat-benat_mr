@@ -13,7 +13,6 @@ import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import CategoryPage from "./pages/CategoryPage";
 import NotFound from "./pages/NotFound";
-import Callback from "./pages/callback";
 
 const queryClient = new QueryClient();
 
@@ -38,10 +37,7 @@ const App = () => {
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/cart" element={<Cart />} />
-              
-              {/* أضفنا هذا المسار الجديد */}
-              <Route path="/callback" element={<Callback />} />
-              
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
