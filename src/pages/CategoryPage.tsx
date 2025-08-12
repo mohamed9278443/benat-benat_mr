@@ -265,7 +265,9 @@ const CategoryPage: React.FC = () => {
                       </span>
                     </div>
 
-                    <ProductActions productId={product.id} />
+                    <div className="flex items-center space-x-3">
+                      <ProductActions productId={product.id} />
+                    </div>
                   </div>
                 </div>
               </Card>
