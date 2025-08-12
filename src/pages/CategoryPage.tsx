@@ -246,7 +246,6 @@ const CategoryPage: React.FC = () => {
                       </h3>
                     </Link>
 
-                    {/* وصف مختصر بخط صغير */}
                     {product.description && (
                       <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
                         {product.description}
@@ -254,12 +253,14 @@ const CategoryPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* السعر وأيقونات الإجراءات */}
-                  <div className="flex items-center justify-between mt-2">
+                  {/* السعر وأيقونات الإجراءات - تصميم مرن */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
                     <span className="text-lg font-bold text-primary whitespace-nowrap">
                       {product.price} أوقية
                     </span>
-                    <ProductActions productId={product.id} />
+                    <div className="w-full sm:w-auto">
+                      <ProductActions productId={product.id} />
+                    </div>
                   </div>
                 </div>
               </Card>
