@@ -50,11 +50,12 @@ export const WhatsAppOrderButton: React.FC<WhatsAppOrderButtonProps> = ({
   const handleWhatsAppOrder = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    const whatsappNumber = settings.whatsapp_number || '+222 49055137';
-    const cleanedNumber = whatsappNumber.replace(/\s+/g, '');
+    const whatsappNumber = "22249055137";
     
-    const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${generateWhatsAppMessage()}`;
-    window.open(whatsappUrl, '_blank');
+    const message = generateWhatsAppMessage();
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+    
+    window.location.href = whatsappUrl;
   };
 
   return (
