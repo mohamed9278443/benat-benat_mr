@@ -13,7 +13,6 @@ import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import CategoryPage from "./pages/CategoryPage";
 import NotFound from "./pages/NotFound";
-import Callback from "./pages/callback";
 
 const queryClient = new QueryClient();
 
