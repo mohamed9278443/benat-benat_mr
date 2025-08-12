@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, Plus, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { StarRating } from '@/components/StarRating';
 import { ProductActions } from '@/components/ProductActions';
 import { CartIcon } from '@/components/CartIcon';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,8 +14,6 @@ interface Product {
   description?: string;
   price: number;
   image_url?: string;
-  rating?: number;
-  rating_count?: number;
   category_id?: string;
   is_active?: boolean;
   created_at?: string;
@@ -257,17 +254,12 @@ const CategoryPage: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <StarRating rating={product.rating || 0} ratingCount={product.rating_count || 0} />
-                      <span className="text-lg font-bold text-primary">
-                        {product.price} أوقية
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-3">
-                      <ProductActions productId={product.id} />
-                    </div>
+                  {/* السعر وأيقونات الإجراءات */}
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-lg font-bold text-primary whitespace-nowrap">
+                      {product.price} أوقية
+                    </span>
+                    <ProductActions productId={product.id} />
                   </div>
                 </div>
               </Card>
