@@ -59,7 +59,6 @@ const CategoryPage: React.FC = () => {
 
   const fetchCategoryAndProducts = async () => {
     try {
-      // Fetch category
       const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
         .select('*')
@@ -69,7 +68,6 @@ const CategoryPage: React.FC = () => {
       if (categoryError) throw categoryError;
       setCategory(categoryData);
 
-      // Fetch products in this category
       const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*')
@@ -129,8 +127,8 @@ const CategoryPage: React.FC = () => {
             </Link>
             
             <div className="text-center">
-              <h1 className="text-2xl font-bold">بنات</h1>
-              <p className="text-sm opacity-90">Banat</p>
+              <h1 className="text-2xl font-bold">{category.name}</h1>
+              {category.name_en && <p className="text-sm opacity-90">{category.name_en}</p>}
             </div>
             
             <div className="flex items-center gap-4">
@@ -204,9 +202,12 @@ const CategoryPage: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((product) => (
-              <Card key={product.id} className="group relative overflow-hidden hover-scale">
+              <Card 
+                key={product.id} 
+                className="group relative overflow-hidden hover-scale flex flex-col h-64"
+              >
                 {isAdmin && (
                   <Button
                     variant="ghost"
@@ -217,8 +218,8 @@ const CategoryPage: React.FC = () => {
                   </Button>
                 )}
                 
-                <Link to={`/product/${product.id}`} className="block">
-                  <div className="aspect-square overflow-hidden">
+                <Link to={`/product/${product.id}`} className="block flex-shrink-0">
+                  <div className="h-36 overflow-hidden">
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
@@ -227,21 +228,21 @@ const CategoryPage: React.FC = () => {
                   </div>
                 </Link>
                 
-                <div className="p-4">
+                <div className="p-2 flex flex-col flex-grow justify-between">
                   <Link to={`/product/${product.id}`}>
-                    <h3 className="font-semibold text-lg text-foreground mb-2 hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-sm text-foreground mb-1 hover:text-primary transition-colors line-clamp-2">
                       {product.name}
                     </h3>
                   </Link>
                   
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-2">
                     <StarRating rating={product.rating} ratingCount={product.rating_count} />
-                    <span className="text-lg font-bold text-primary">
+                    <span className="text-sm font-bold text-primary">
                       {product.price} أوقية
                     </span>
                   </div>
                   
-                  <ProductActions productId={product.id} />
+                  <ProductActions productId={product.id} small />
                 </div>
               </Card>
             ))}
