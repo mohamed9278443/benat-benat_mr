@@ -17,7 +17,6 @@ interface Product {
   category_id?: string;
   is_active?: boolean;
   created_at?: string;
-  features?: string[]; // إضافة حقول الميزات السريعة
 }
 
 interface Category {
@@ -71,6 +70,7 @@ const CategoryPage: React.FC = () => {
         .select('*')
         .eq('id', id)
         .single();
+
       if (categoryError) throw categoryError;
       setCategory(categoryData as Category);
 
@@ -80,6 +80,7 @@ const CategoryPage: React.FC = () => {
         .eq('category_id', id)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+
       if (productsError) throw productsError;
       setProducts((productsData as Product[]) || []);
     } catch (error) {
@@ -94,15 +95,94 @@ const CategoryPage: React.FC = () => {
     }
   };
 
-  if (loading) return (/*...محتوى التحميل كما السابق...*/);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground mt-2">جاري التحميل...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  if (!category) return (/*...محتوى الأخطاء كما السابق...*/);
+  if (!category) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">الفئة غير موجودة</h1>
+          <Link to="/">
+            <Button>العودة للرئيسية</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* الجزء العلوي من الصفحة كما في الكود السابق */}
-      {/* ... */}
-      {/* Products Grid */}
+      <header className="bg-primary text-primary-foreground shadow-lg">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80">
+              <ArrowRight className="h-5 w-5" />
+              <span>العودة</span>
+            </Link>
+
+            <div className="text-center">
+              <h1 className="text-2xl font-bold">{category.name}</h1>
+              {category.name_en && <p className="text-sm opacity-90">{category.name_en}</p>}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <CartIcon />
+              {user ? (
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/20">
+                    الملف الشخصي
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/20">
+                    تسجيل الدخول
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="bg-accent/50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="relative group inline-block">
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              <img
+                src={category.image_url || '/placeholder-category.png'}
+                alt={category.name}
+                className="w-32 h-32 object-cover rounded-full mx-auto mb-4 border-4 border-primary/20"
+              />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{category.name}</h1>
+            {category.name_en && (
+              <p className="text-lg text-muted-foreground">{category.name_en}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">المنتجات ({products.length})</h2>
@@ -115,11 +195,25 @@ const CategoryPage: React.FC = () => {
         </div>
 
         {products.length === 0 ? (
-          /*...محتوى لا توجد منتجات...*/
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg mb-4">لا توجد منتجات في هذه الفئة حالياً</p>
+            {isAdmin && (
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                إضافة أول منتج
+              </Button>
+            )}
+          </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" style={{ gridAutoRows: '1fr' }}>
+          <div
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+            style={{ gridAutoRows: '1fr' }}
+          >
             {products.map((product) => (
-              <Card key={product.id} className="group relative overflow-hidden flex flex-col">
+              <Card
+                key={product.id}
+                className="group relative overflow-hidden flex flex-col"
+              >
                 {isAdmin && (
                   <Button
                     variant="ghost"
@@ -132,33 +226,37 @@ const CategoryPage: React.FC = () => {
 
                 <Link to={`/product/${product.id}`} className="block flex-shrink-0">
                   <div className="w-full h-52 overflow-hidden rounded-md bg-gray-50 flex items-center justify-center">
-                    <img src={product.image_url || '/placeholder.svg'} alt={product.name} className="w-full h-full object-cover" />
+                    <img
+                      src={product.image_url || '/placeholder.svg'}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </Link>
 
-                <div className="p-4 flex flex-col flex-1">
-                  <Link to={`/product/${product.id}`}>
-                    <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 hover:text-primary transition-colors">
-                      {product.name}
-                    </h3>
-                  </Link>
+                <div className="p-4 flex flex-col flex-1 justify-between">
+                  <div>
+                    <Link to={`/product/${product.id}`}>
+                      <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 hover:text-primary transition-colors">
+                        {product.name}
+                      </h3>
+                    </Link>
 
-                  {product.features?.length ? (
-                    <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mb-2">
-                      {product.features.map((feat, idx) => (
-                        <li key={idx}>{feat}</li>
-                      ))}
-                    </ul>
-                  ) : null}
+                    {product.description && (
+                      <div className="text-sm text-muted-foreground mb-2">
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>ميزة أولى للمنتج</li>
+                          <li>ميزة ثانية مهمة</li>
+                        </ul>
+                        <p className="mt-1 line-clamp-3">{product.description}</p>
+                      </div>
+                    )}
+                  </div>
 
-                  {product.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-                      {product.description}
-                    </p>
-                  )}
-
-                  <div className="mt-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                    <span className="text-lg font-bold text-primary whitespace-nowrap">{product.price} أوقية</span>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
+                    <span className="text-lg font-bold text-primary whitespace-nowrap">
+                      {product.price} أوقية
+                    </span>
                     <div className="w-full sm:w-auto">
                       <ProductActions productId={product.id} />
                     </div>
