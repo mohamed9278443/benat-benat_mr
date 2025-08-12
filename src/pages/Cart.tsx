@@ -182,7 +182,7 @@ export default function Cart() {
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.product.name}</h3>
                         <p className="text-primary font-bold">
-                          {item.product.price.toFixed(2)} ريال
+                          {item.product.price.toFixed(2)} أوقية
                         </p>
                         
                         <div className="flex items-center gap-2 mt-2">
@@ -227,7 +227,7 @@ export default function Cart() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-center text-lg font-bold">
                   <span>المجموع الكلي:</span>
-                  <span className="text-primary">{totalPrice.toFixed(2)} ريال</span>
+                  <span className="text-primary">{totalPrice.toFixed(2)} أوقية</span>
                 </div>
               </CardContent>
             </Card>
