@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Plus, Edit } from 'lucide-react';
+import { ArrowRight, Plus, Edit, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ProductActions } from '@/components/ProductActions';
 import { CartIcon } from '@/components/CartIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/contexts/CartContext';
 
 interface Product {
   id: string;
@@ -29,6 +29,7 @@ interface Category {
 const CategoryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -216,7 +217,7 @@ const CategoryPage: React.FC = () => {
             {products.map((product) => (
               <Card
                 key={product.id}
-                className="group relative overflow-hidden flex flex-col cursor-pointer transition-transform hover:shadow-lg"
+                className="group relative overflow-hidden flex flex-col cursor-pointer"
                 onClick={() => navigate(`/product/${product.id}`)}
               >
                 {isAdmin && (
@@ -224,24 +225,33 @@ const CategoryPage: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // هنا يمكنك وضع دالة لتعديل المنتج
-                    }}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                 )}
 
-                {/* الصورة بإطار مستطيل ثابت */}
-                <div className="block flex-shrink-0">
+                {/* إطار الصورة مع زر الشراء الجديد */}
+                <div className="relative">
                   <div className="w-full h-52 overflow-hidden rounded-t-md bg-gray-50 flex items-center justify-center">
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
+                  
+                  {/* زر الشراء الجديد */}
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product.id);
+                    }}
+                    className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg z-10"
+                    size="icon"
+                    title="أضف إلى السلة"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                  </Button>
                 </div>
 
                 <div className="p-4 flex flex-col flex-1 justify-between">
@@ -257,14 +267,11 @@ const CategoryPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* السعر وأيقونات الإجراءات */}
-                  <div className="flex items-center justify-between gap-2 mt-2">
+                  {/* منطقة السعر */}
+                  <div className="mt-2">
                     <span className="text-lg font-bold text-primary whitespace-nowrap">
                       {product.price} أوقية
                     </span>
-                    <div className="flex-shrink-0">
-                      <ProductActions productId={product.id} />
-                    </div>
                   </div>
                 </div>
               </Card>
