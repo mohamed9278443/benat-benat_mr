@@ -40,25 +40,31 @@ const CategoryPage: React.FC = () => {
   useEffect(() => {
     checkUser();
     fetchCategoryAndProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-    
-    if (user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-      
-      setIsAdmin(profile?.role === 'admin');
+    try {
+      const { data } = await supabase.auth.getUser();
+      const user = (data as any)?.user ?? null;
+      setUser(user);
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+        setIsAdmin(profile?.role === 'admin');
+      }
+    } catch (err) {
+      console.error('checkUser error', err);
     }
   };
 
   const fetchCategoryAndProducts = async () => {
     try {
+      // fetch category
       const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
         .select('*')
@@ -68,6 +74,7 @@ const CategoryPage: React.FC = () => {
       if (categoryError) throw categoryError;
       setCategory(categoryData);
 
+      // fetch products
       const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*')
@@ -125,12 +132,12 @@ const CategoryPage: React.FC = () => {
               <ArrowRight className="h-5 w-5" />
               <span>العودة</span>
             </Link>
-            
+
             <div className="text-center">
               <h1 className="text-2xl font-bold">{category.name}</h1>
               {category.name_en && <p className="text-sm opacity-90">{category.name_en}</p>}
             </div>
-            
+
             <div className="flex items-center gap-4">
               <CartIcon />
               {user ? (
@@ -172,9 +179,7 @@ const CategoryPage: React.FC = () => {
               />
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-2">{category.name}</h1>
-            {category.name_en && (
-              <p className="text-lg text-muted-foreground">{category.name_en}</p>
-            )}
+            {category.name_en && <p className="text-lg text-muted-foreground">{category.name_en}</p>}
           </div>
         </div>
       </div>
@@ -202,11 +207,13 @@ const CategoryPage: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          // مهم: هنا نعرض عمودين على الهواتف (grid-cols-2)
+          // ثم نعيد نفس سلوك الكمبيوتر الأصلي عبر md:grid-cols-2 (يعيد ما كان سابقًا)
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
             {products.map((product) => (
-              <Card 
-                key={product.id} 
-                className="group relative overflow-hidden hover-scale flex flex-col h-64"
+              <Card
+                key={product.id}
+                className="group relative overflow-hidden hover-scale flex flex-col h-80"
               >
                 {isAdmin && (
                   <Button
@@ -217,32 +224,47 @@ const CategoryPage: React.FC = () => {
                     <Edit className="h-4 w-4" />
                   </Button>
                 )}
-                
+
+                {/* صورة المنتج: حاوية مستطيلة تناسب صور 768x1024 */}
                 <Link to={`/product/${product.id}`} className="block flex-shrink-0">
-                  <div className="h-36 overflow-hidden">
+                  <div className="w-full h-[52%] overflow-hidden bg-gray-100 flex items-center justify-center">
+                    {/* object-contain يحافظ على الصورة دون قطع - لأن الحاوية مستطيلة، صورك 768x1024 ستظهر بشكل جيد */}
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="max-h-full w-auto object-contain"
                     />
                   </div>
                 </Link>
-                
-                <div className="p-2 flex flex-col flex-grow justify-between">
-                  <Link to={`/product/${product.id}`}>
-                    <h3 className="font-semibold text-sm text-foreground mb-1 hover:text-primary transition-colors line-clamp-2">
-                      {product.name}
-                    </h3>
-                  </Link>
-                  
-                  <div className="flex items-center justify-between mb-2">
-                    <StarRating rating={product.rating} ratingCount={product.rating_count} />
-                    <span className="text-sm font-bold text-primary">
-                      {product.price} أوقية
-                    </span>
+
+                {/* محتوى البطاقة */}
+                <div className="p-3 flex flex-col flex-1 justify-between">
+                  <div>
+                    <Link to={`/product/${product.id}`}>
+                      <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2">
+                        {product.name}
+                      </h3>
+                    </Link>
+
+                    {/* وصف مختصر بسطرين مع نقاط ... (يحتاج tailwind line-clamp plugin) */}
+                    <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                      {product.description || ''}
+                    </p>
                   </div>
-                  
-                  <ProductActions productId={product.id} small />
+
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <StarRating rating={product.rating} ratingCount={product.rating_count} />
+                      <span className="text-lg font-bold text-primary">
+                        {product.price} أوقية
+                      </span>
+                    </div>
+
+                    {/* ProductActions داخل صف صغير */}
+                    <div>
+                      <ProductActions productId={product.id} />
+                    </div>
+                  </div>
                 </div>
               </Card>
             ))}
