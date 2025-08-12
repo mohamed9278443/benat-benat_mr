@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, Plus, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,17 +15,18 @@ interface Product {
   description?: string;
   price: number;
   image_url?: string;
-  rating: number;
-  rating_count: number;
-  category?: string;
-  is_featured: boolean;
+  rating?: number;
+  rating_count?: number;
+  category_id?: string;
+  is_active?: boolean;
+  created_at?: string;
 }
 
 interface Category {
   id: string;
   name: string;
   name_en?: string;
-  image_url: string;
+  image_url?: string;
 }
 
 const CategoryPage: React.FC = () => {
@@ -40,22 +41,24 @@ const CategoryPage: React.FC = () => {
   useEffect(() => {
     checkUser();
     fetchCategoryAndProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const checkUser = async () => {
     try {
       const { data } = await supabase.auth.getUser();
-      const user = (data as any)?.user ?? null;
-      setUser(user);
+      const currentUser = (data as any)?.user ?? null;
+      setUser(currentUser);
 
-      if (user) {
+      if (currentUser) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
-          .eq('user_id', user.id)
+          .eq('user_id', currentUser.id)
           .single();
-        setIsAdmin(profile?.role === 'admin');
+
+        setIsAdmin((profile as any)?.role === 'admin');
+      } else {
+        setIsAdmin(false);
       }
     } catch (err) {
       console.error('checkUser error', err);
@@ -63,8 +66,8 @@ const CategoryPage: React.FC = () => {
   };
 
   const fetchCategoryAndProducts = async () => {
+    setLoading(true);
     try {
-      // fetch category
       const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
         .select('*')
@@ -72,9 +75,8 @@ const CategoryPage: React.FC = () => {
         .single();
 
       if (categoryError) throw categoryError;
-      setCategory(categoryData);
+      setCategory(categoryData as Category);
 
-      // fetch products
       const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*')
@@ -83,7 +85,7 @@ const CategoryPage: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (productsError) throw productsError;
-      setProducts(productsData || []);
+      setProducts((productsData as Product[]) || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
@@ -173,13 +175,15 @@ const CategoryPage: React.FC = () => {
                 </Button>
               )}
               <img
-                src={category.image_url}
+                src={category.image_url || '/placeholder-category.png'}
                 alt={category.name}
                 className="w-32 h-32 object-cover rounded-full mx-auto mb-4 border-4 border-primary/20"
               />
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-2">{category.name}</h1>
-            {category.name_en && <p className="text-lg text-muted-foreground">{category.name_en}</p>}
+            {category.name_en && (
+              <p className="text-lg text-muted-foreground">{category.name_en}</p>
+            )}
           </div>
         </div>
       </div>
@@ -207,13 +211,14 @@ const CategoryPage: React.FC = () => {
             )}
           </div>
         ) : (
-          // مهم: هنا نعرض عمودين على الهواتف (grid-cols-2)
-          // ثم نعيد نفس سلوك الكمبيوتر الأصلي عبر md:grid-cols-2 (يعيد ما كان سابقًا)
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+          <div
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+            style={{ gridAutoRows: '1fr' }}
+          >
             {products.map((product) => (
               <Card
                 key={product.id}
-                className="group relative overflow-hidden hover-scale flex flex-col h-80"
+                className="group relative overflow-hidden flex flex-col"
               >
                 {isAdmin && (
                   <Button
@@ -225,45 +230,42 @@ const CategoryPage: React.FC = () => {
                   </Button>
                 )}
 
-                {/* صورة المنتج: حاوية مستطيلة تناسب صور 768x1024 */}
+                {/* الصورة بإطار مستطيل ثابت */}
                 <Link to={`/product/${product.id}`} className="block flex-shrink-0">
-                  <div className="w-full h-[52%] overflow-hidden bg-gray-100 flex items-center justify-center">
-                    {/* object-contain يحافظ على الصورة دون قطع - لأن الحاوية مستطيلة، صورك 768x1024 ستظهر بشكل جيد */}
+                  <div className="w-full h-52 overflow-hidden rounded-md bg-gray-50 flex items-center justify-center">
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
-                      className="max-h-full w-auto object-contain"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </Link>
 
-                {/* محتوى البطاقة */}
-                <div className="p-3 flex flex-col flex-1 justify-between">
+                <div className="p-4 flex flex-col flex-1 justify-between">
                   <div>
                     <Link to={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2">
+                      <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 hover:text-primary transition-colors">
                         {product.name}
                       </h3>
                     </Link>
 
-                    {/* وصف مختصر بسطرين مع نقاط ... (يحتاج tailwind line-clamp plugin) */}
-                    <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                      {product.description || ''}
-                    </p>
+                    {/* وصف مختصر بخط صغير */}
+                    {product.description && (
+                      <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                        {product.description}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <StarRating rating={product.rating} ratingCount={product.rating_count} />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <StarRating rating={product.rating || 0} ratingCount={product.rating_count || 0} />
                       <span className="text-lg font-bold text-primary">
                         {product.price} أوقية
                       </span>
                     </div>
 
-                    {/* ProductActions داخل صف صغير */}
-                    <div>
-                      <ProductActions productId={product.id} />
-                    </div>
+                    <ProductActions productId={product.id} />
                   </div>
                 </div>
               </Card>
