@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Plus, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -28,6 +28,7 @@ interface Category {
 
 const CategoryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -215,36 +216,39 @@ const CategoryPage: React.FC = () => {
             {products.map((product) => (
               <Card
                 key={product.id}
-                className="group relative overflow-hidden flex flex-col"
+                className="group relative overflow-hidden flex flex-col cursor-pointer transition-transform hover:shadow-lg"
+                onClick={() => navigate(`/product/${product.id}`)}
               >
                 {isAdmin && (
                   <Button
                     variant="ghost"
                     size="sm"
                     className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // هنا يمكنك وضع دالة لتعديل المنتج
+                    }}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                 )}
 
                 {/* الصورة بإطار مستطيل ثابت */}
-                <Link to={`/product/${product.id}`} className="block flex-shrink-0">
-                  <div className="w-full h-52 overflow-hidden rounded-md bg-gray-50 flex items-center justify-center">
+                <div className="block flex-shrink-0">
+                  <div className="w-full h-52 overflow-hidden rounded-t-md bg-gray-50 flex items-center justify-center">
                     <img
                       src={product.image_url || '/placeholder.svg'}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                </Link>
+                </div>
 
                 <div className="p-4 flex flex-col flex-1 justify-between">
                   <div>
-                    <Link to={`/product/${product.id}`}>
-                      <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 hover:text-primary transition-colors">
-                        {product.name}
-                      </h3>
-                    </Link>
+                    <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                      {product.name}
+                    </h3>
 
                     {product.description && (
                       <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
@@ -253,12 +257,12 @@ const CategoryPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* السعر وأيقونات الإجراءات - تصميم مرن */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
+                  {/* السعر وأيقونات الإجراءات */}
+                  <div className="flex items-center justify-between gap-2 mt-2">
                     <span className="text-lg font-bold text-primary whitespace-nowrap">
                       {product.price} أوقية
                     </span>
-                    <div className="w-full sm:w-auto">
+                    <div className="flex-shrink-0">
                       <ProductActions productId={product.id} />
                     </div>
                   </div>
