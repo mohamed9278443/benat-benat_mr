@@ -215,67 +215,81 @@ const CategoryPage: React.FC = () => {
             style={{ gridAutoRows: '1fr' }}
           >
             {products.map((product) => (
-              <Card
-                key={product.id}
-                className="group relative overflow-hidden flex flex-col cursor-pointer"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                {isAdmin && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                )}
+  <Card
+    key={product.id}
+    className="group relative overflow-hidden flex flex-col cursor-pointer"
+    onClick={() => navigate(`/product/${product.id}`)}
+  >
+    {isAdmin && (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"
+      >
+        <Edit className="h-4 w-4" />
+      </Button>
+    )}
 
-                {/* إطار الصورة مع زر الشراء الجديد */}
-                <div className="relative">
-                  <div className="w-full h-52 overflow-hidden rounded-t-md bg-gray-50 flex items-center justify-center">
-                    <img
-                      src={product.image_url || '/placeholder.svg'}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  
-                  {/* زر الشراء الجديد */}
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart(product.id);
-                    }}
-                    className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg z-10"
-                    size="icon"
-                    title="أضف إلى السلة"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                  </Button>
-                </div>
+    {/* إطار الصورة مع الأيقونات */}
+    <div className="relative">
+      <div className="w-full h-52 overflow-hidden rounded-t-md bg-gray-50 flex items-center justify-center">
+        <img
+          src={product.image_url || '/placeholder.svg'}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      
+      {/* أيقونة المعلومات (دائمة الظهور) */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="absolute bottom-3 left-3 z-10 bg-background/80"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/product/${product.id}`);
+        }}
+        title="تفاصيل المنتج"
+      >
+        <Info className="h-4 w-4" />
+      </Button>
 
-                <div className="p-4 flex flex-col flex-1 justify-between">
-                  <div>
-                    <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
-                      {product.name}
-                    </h3>
+      {/* أيقونة السلة (تظهر عند التحويم) */}
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          addToCart(product.id);
+        }}
+        className="absolute bottom-3 right-3 z-10 opacity-0 group-hover:opacity-100 md:opacity-100 md:group-hover:scale-110 transition-all duration-300 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg"
+        size="icon"
+        title="أضف إلى السلة"
+      >
+        <ShoppingCart className="h-5 w-5" />
+      </Button>
+    </div>
 
-                    {product.description && (
-                      <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                        {product.description}
-                      </p>
-                    )}
-                  </div>
+    {/* معلومات المنتج */}
+    <div className="p-4 flex flex-col flex-1 justify-between">
+      <div>
+        <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+          {product.name}
+        </h3>
 
-                  {/* منطقة السعر */}
-                  <div className="mt-2">
-                    <span className="text-lg font-bold text-primary whitespace-nowrap">
-                      {product.price} أوقية
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            ))}
+        {product.description && (
+          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+            {product.description}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-2">
+        <span className="text-lg font-bold text-primary whitespace-nowrap">
+          {product.price} أوقية
+        </span>
+      </div>
+    </div>
+  </Card>
+))}
           </div>
         )}
       </div>
