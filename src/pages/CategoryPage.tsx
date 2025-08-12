@@ -123,6 +123,7 @@ const CategoryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
       <header className="bg-primary text-primary-foreground shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -156,6 +157,7 @@ const CategoryPage: React.FC = () => {
         </div>
       </header>
 
+      {/* Category Header */}
       <div className="bg-accent/50 py-8">
         <div className="container mx-auto px-4">
           <div className="text-center">
@@ -183,6 +185,7 @@ const CategoryPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Products Grid */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">المنتجات ({products.length})</h2>
@@ -224,6 +227,7 @@ const CategoryPage: React.FC = () => {
                   </Button>
                 )}
 
+                {/* الصورة بإطار مستطيل ثابت */}
                 <Link to={`/product/${product.id}`} className="block flex-shrink-0">
                   <div className="w-full h-52 overflow-hidden rounded-md bg-gray-50 flex items-center justify-center">
                     <img
@@ -243,16 +247,13 @@ const CategoryPage: React.FC = () => {
                     </Link>
 
                     {product.description && (
-                      <div className="text-sm text-muted-foreground mb-2">
-                        <ul className="list-disc list-inside space-y-1">
-                          <li>ميزة أولى للمنتج</li>
-                          <li>ميزة ثانية مهمة</li>
-                        </ul>
-                        <p className="mt-1 line-clamp-3">{product.description}</p>
-                      </div>
+                      <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                        {product.description}
+                      </p>
                     )}
                   </div>
 
+                  {/* السعر وأيقونات الإجراءات - تصميم مرن */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
                     <span className="text-lg font-bold text-primary whitespace-nowrap">
                       {product.price} أوقية
