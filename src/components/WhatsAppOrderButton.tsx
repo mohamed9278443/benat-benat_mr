@@ -24,17 +24,22 @@ export const WhatsAppOrderButton: React.FC<WhatsAppOrderButtonProps> = ({
   const { settings } = useSiteSettings();
 
   const generateWhatsAppMessage = () => {
+    const whatsappNumber = settings.whatsapp_number || '+222 49055137';
+    
     let message = `مرحباً، أود طلب المنتجات التالية:\n\n`;
     
+    // Add products
     items.forEach((item, index) => {
       message += `${index + 1}. ${item.product.name}\n`;
       message += `   الكمية: ${item.quantity}\n`;
       message += `   السعر: ${item.product.price.toFixed(2)} أوقية\n`;
-      message += `   الرابط: ${window.location.origin}/product/${item.product_id}\n\n`;
+      message += `   الرابط: ${window.location.origin}/product/${item.product_id}\n`;
+      message += `\n`;
     });
     
     message += `المبلغ الإجمالي: ${totalPrice.toFixed(2)} أوقية\n\n`;
     
+    // Add customer info
     message += `معلومات العميل:\n`;
     message += `الاسم: ${orderData.customerName}\n`;
     message += `رقم الهاتف: ${orderData.customerPhone}\n`;
@@ -47,20 +52,15 @@ export const WhatsAppOrderButton: React.FC<WhatsAppOrderButtonProps> = ({
     return encodeURIComponent(message);
   };
 
-  const handleWhatsAppOrder = (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    const whatsappNumber = "22249055137";
-    
+  const handleWhatsAppOrder = () => {
     const message = generateWhatsAppMessage();
+    const whatsappNumber = settings.whatsapp_number?.replace(/\+/g, '') || '22249055137';
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
-    
-    window.location.href = whatsappUrl;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
     <Button
-      type="button"
       onClick={handleWhatsAppOrder}
       disabled={disabled || items.length === 0}
       className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white"
