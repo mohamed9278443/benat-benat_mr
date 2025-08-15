@@ -19,7 +19,7 @@ export default function Footer() {
                   href={`tel:${settings.whatsapp_number || '+222 49055137'}`}
                   className="text-primary hover:underline"
                 >
-                  {settings.whatsapp_number || '+222 49055137'}
+                  {settings.whatsapp_number || 'téléphone'}
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
@@ -28,7 +28,7 @@ export default function Footer() {
                   href={`mailto:${settings.site_email || 'moubarakouhoussein@gmail.com'}`}
                   className="text-primary hover:underline"
                 >
-                  {settings.site_email || 'moubarakouhoussein@gmail.com'}
+                  {settings.site_email || 'E-mail'}
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
@@ -39,7 +39,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  {settings.contact_address || 'الموقع الجغرافي'}
+                  {settings.contact_address || 'localisation'}
                 </a>
               </div>
             </div>
