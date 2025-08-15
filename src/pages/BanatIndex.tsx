@@ -296,15 +296,15 @@ const BanatIndex = () => {
           <p className="text-xl text-muted-foreground mb-8">
             أجمل الملابس النسائية والحقائب والعطور للسوق الموريتاني
           </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg" asChild>
+          <div className="flex flex-wrap gap-2 justify-center max-w-md mx-auto">
+            <Button size="sm" asChild className="flex-1 min-w-[120px]">
               <Link to="#categories">تصفح المنتجات</Link>
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            <Button variant="outline" size="sm" asChild className="flex-1 min-w-[120px]">
               <Link to="/cart">سلة المشتريات</Link>
             </Button>
             {isAdmin && (
-              <Button variant="secondary" size="lg" onClick={handleAddProduct}>
+              <Button variant="secondary" size="sm" onClick={handleAddProduct} className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 إضافة منتج
               </Button>
