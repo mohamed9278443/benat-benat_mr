@@ -15,11 +15,21 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Phone className="h-4 w-4 text-primary" />
-                <span className="text-muted-foreground">{settings.whatsapp_number || '+222 49055137'}</span>
+                <a 
+                  href={`tel:${settings.whatsapp_number || '+222 49055137'}`}
+                  className="text-primary hover:underline"
+                >
+                  {settings.whatsapp_number || '+222 49055137'}
+                </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                <span className="text-muted-foreground">{settings.email || 'moubarakouhoussein@gmail.com'}</span>
+                <a 
+                  href={`mailto:${settings.email || 'moubarakouhoussein@gmail.com'}`}
+                  className="text-primary hover:underline"
+                >
+                  {settings.email || 'moubarakouhoussein@gmail.com'}
+                </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
