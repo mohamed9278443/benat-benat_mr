@@ -44,13 +44,10 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          {/* Logo & Description */}
+          {/* Logo */}
           <div>
-            <h2 className="text-2xl font-bold text-primary mb-2">{settings.site_name || 'بنات'}</h2>
-            <p className="text-muted-foreground mb-3">{settings.site_description || 'متجر للأزياء النسائية'}</p>
-            {settings.footer_text && (
-              <p className="text-sm text-muted-foreground">{settings.footer_text}</p>
-            )}
+            <h2 className="text-2xl font-bold text-primary mb-2">{settings.site_name_ar || 'بنات'}</h2>
+            <p className="text-muted-foreground">{settings.site_name_en || 'BENAT'}</p>
           </div>
           {/* Quick Links */}
           <div>
@@ -64,7 +61,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground">
-            © 2025 متجر {settings.site_name || 'بنات'}. جميع الحقوق محفوظة.
+            © 2025 متجر {settings.site_name_ar || 'بنات'}/{settings.site_name_en || 'BENAT'}. جميع الحقوق محفوظة.
           </p>
         </div>
       </div>

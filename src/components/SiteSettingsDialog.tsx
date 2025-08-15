@@ -22,7 +22,8 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
   const { settings, updateSetting, loading, refetch } = useSiteSettings();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    site_name: '',
+    site_name_ar: '',
+    site_name_en: '',
     site_description: '',
     footer_text: '',
     whatsapp_number: '',
@@ -35,7 +36,8 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
   useEffect(() => {
     if (settings && !loading) {
       setFormData({
-        site_name: settings.site_name || '',
+        site_name_ar: settings.site_name_ar || '',
+        site_name_en: settings.site_name_en || '',
         site_description: settings.site_description || '',
         footer_text: settings.footer_text || '',
         whatsapp_number: settings.whatsapp_number || '',
@@ -95,15 +97,27 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="site_name">اسم الموقع</Label>
+              <Label htmlFor="site_name_ar">اسم الموقع (بالعربية)</Label>
               <Input
-                id="site_name"
-                value={formData.site_name}
-                onChange={(e) => setFormData({ ...formData, site_name: e.target.value })}
-                placeholder="بنات - Banat"
+                id="site_name_ar"
+                value={formData.site_name_ar}
+                onChange={(e) => setFormData({ ...formData, site_name_ar: e.target.value })}
+                placeholder="بنات"
               />
             </div>
             
+            <div className="space-y-2">
+              <Label htmlFor="site_name_en">اسم الموقع (بالإنجليزية)</Label>
+              <Input
+                id="site_name_en"
+                value={formData.site_name_en}
+                onChange={(e) => setFormData({ ...formData, site_name_en: e.target.value })}
+                placeholder="BANAT"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="whatsapp_number">رقم الواتساب</Label>
               <Input

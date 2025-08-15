@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from "@/components/Footer";
 import { CategoryCard } from '@/components/CategoryCard';
@@ -12,6 +12,7 @@ import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useCategories } from '@/hooks/useCategories';
 import { CategoryManagementDialog } from '@/components/CategoryManagementDialog';
 import { ProductManagementDialog } from '@/components/ProductManagementDialog';
+import { SiteSettingsDialog } from '@/components/SiteSettingsDialog';
 
 interface Product {
   id: string;
@@ -34,6 +35,7 @@ const BanatIndex = () => {
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [isVideoEditDialogOpen, setIsVideoEditDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { settings, loading: settingsLoading } = useSiteSettings();
@@ -352,9 +354,20 @@ const BanatIndex = () => {
       {settings.main_video_url && (
         <section className="py-12 bg-accent/30">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
+            <div className="text-center mb-8 relative">
               <h2 className="text-3xl font-bold text-foreground mb-4">فيديو توضيحي</h2>
               <p className="text-muted-foreground">تعرفي أكثر على منتجاتنا</p>
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-0 left-0 gap-2"
+                  onClick={() => setIsVideoEditDialogOpen(true)}
+                >
+                  <Edit className="h-4 w-4" />
+                  تحرير الفيديو
+                </Button>
+              )}
             </div>
             <div className="mt-8">
               <MainVideo 
@@ -380,6 +393,11 @@ const BanatIndex = () => {
         product={null}
         categories={categories}
         onSuccess={handleProductDialogSuccess}
+      />
+      {/* Video Edit Dialog */}
+      <SiteSettingsDialog
+        open={isVideoEditDialogOpen}
+        onOpenChange={setIsVideoEditDialogOpen}
       />
     </div>
   );
