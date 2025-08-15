@@ -129,6 +129,22 @@ const BanatIndex = () => {
     }
   };
 
+  // Search functionality
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  // Filter categories and products based on search
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (category.name_en && category.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   const signInWithGoogle = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -260,9 +276,9 @@ const BanatIndex = () => {
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="البحث..."
+                  placeholder="البحث في المنتجات والفئات..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="pl-10 pr-4 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-foreground/70" />
@@ -300,7 +316,14 @@ const BanatIndex = () => {
       <section id="categories" className="py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">الفئات الرئيسية</h2>
+            <h2 className="text-3xl font-bold text-foreground">
+              {searchQuery ? 'نتائج البحث' : 'الفئات الرئيسية'}
+              {searchQuery && (
+                <span className="text-xl text-muted-foreground block mt-2">
+                  البحث عن: "{searchQuery}"
+                </span>
+              )}
+            </h2>
             {isAdmin && (
               <Button className="gap-2" onClick={handleAddCategory}>
                 <Plus className="h-4 w-4" />
@@ -308,16 +331,74 @@ const BanatIndex = () => {
               </Button>
             )}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <CategoryCard
-                key={category.id}
-                category={category}
-                isAdmin={isAdmin}
-                onEdit={handleEditCategory}
-              />
-            ))}
-          </div>
+          
+          {/* Categories Results */}
+          {searchQuery ? (
+            <>
+              {filteredCategories.length > 0 && (
+                <>
+                  <h3 className="text-xl font-semibold mb-4">الفئات ({filteredCategories.length})</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                    {filteredCategories.map((category) => (
+                      <CategoryCard
+                        key={category.id}
+                        category={category}
+                        isAdmin={isAdmin}
+                        onEdit={handleEditCategory}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {filteredProducts.length > 0 && (
+                <>
+                  <h3 className="text-xl font-semibold mb-4">المنتجات ({filteredProducts.length})</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {filteredProducts.map((product) => (
+                      <div key={product.id} className="bg-card rounded-lg overflow-hidden shadow-sm border">
+                        <Link to={`/product/${product.id}`}>
+                          <img
+                            src={product.image_url || '/placeholder.svg'}
+                            alt={product.name}
+                            className="w-full h-48 object-cover hover:scale-105 transition-transform"
+                          />
+                        </Link>
+                        <div className="p-4">
+                          <Link to={`/product/${product.id}`}>
+                            <h4 className="font-semibold text-foreground hover:text-primary">
+                              {product.name}
+                            </h4>
+                          </Link>
+                          <p className="text-primary font-bold mt-2">{product.price} أوقية</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {filteredCategories.length === 0 && filteredProducts.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground text-lg mb-4">لا توجد نتائج للبحث "{searchQuery}"</p>
+                  <Button variant="outline" onClick={() => setSearchQuery('')}>
+                    مسح البحث
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {categories.map((category) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  isAdmin={isAdmin}
+                  onEdit={handleEditCategory}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
       {/* Main Video Section */}

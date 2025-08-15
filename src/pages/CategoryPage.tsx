@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowRight, Plus, Edit } from 'lucide-react';
+import { ArrowRight, Plus, Edit, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { StarRating } from '@/components/StarRating';
@@ -8,17 +9,23 @@ import { ProductActions } from '@/components/ProductActions';
 import { CartIcon } from '@/components/CartIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { ProductManagementDialog } from '@/components/ProductManagementDialog';
+import { useCategories } from '@/hooks/useCategories';
 
 interface Product {
 id: string;
 name: string;
-description?: string;
+description: string;
 price: number;
-image_url?: string;
+image_url: string;
+video_url?: string;
+product_link?: string;
+category_id: string;
+is_featured: boolean;
+is_active: boolean;
 rating: number;
 rating_count: number;
 category?: string;
-is_featured: boolean;
 }
 
 interface Category {
@@ -35,7 +42,12 @@ const [products, setProducts] = useState<Product[]>([]);
 const [loading, setLoading] = useState(true);
 const [user, setUser] = useState<any>(null);
 const [isAdmin, setIsAdmin] = useState(false);
+const [searchQuery, setSearchQuery] = useState('');
+const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
 const { toast } = useToast();
+
+const { categories } = useCategories();
 
 useEffect(() => {
 checkUser();
@@ -92,6 +104,30 @@ if (categoryError) throw categoryError;
 }
 
 };
+
+const handleAddProduct = () => {
+setEditingProduct(null);
+setIsProductDialogOpen(true);
+};
+
+const handleEditProduct = (product: Product) => {
+setEditingProduct(product);
+setIsProductDialogOpen(true);
+};
+
+const handleProductDialogSuccess = () => {
+fetchCategoryAndProducts();
+toast({
+title: 'نجح العمل',
+description: 'تم حفظ المنتج بنجاح',
+});
+};
+
+// Filter products based on search query
+const filteredProducts = products.filter(product =>
+product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+(product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
+);
 
 if (loading) {
 return (
@@ -178,46 +214,81 @@ return (
         <h1 className="text-3xl font-bold text-foreground mb-2">{category.name}</h1>  
         {category.name_en && (  
           <p className="text-lg text-muted-foreground">{category.name_en}</p>  
-        )}  
+        )}
+        
+        {/* Search Bar */}
+        <div className="mt-6 max-w-md mx-auto">
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="البحث في المنتجات..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          </div>
+        </div>
       </div>  
     </div>  
-  </div>  
+  </div>
 
   {/* Products Grid */}  
   <div className="container mx-auto px-4 py-8">  
     <div className="flex items-center justify-between mb-6">  
-      <h2 className="text-xl font-semibold">المنتجات ({products.length})</h2>  
+      <h2 className="text-xl font-semibold">
+        المنتجات ({filteredProducts.length}
+        {searchQuery && filteredProducts.length !== products.length && (
+          <span className="text-muted-foreground"> من {products.length}</span>
+        )})
+      </h2>  
       {isAdmin && (  
-        <Button className="gap-2">  
+        <Button className="gap-2" onClick={handleAddProduct}>  
           <Plus className="h-4 w-4" />  
           إضافة منتج  
         </Button>  
       )}  
-    </div>  
+    </div>
 
-    {products.length === 0 ? (  
+    {filteredProducts.length === 0 ? (  
       <div className="text-center py-12">  
-        <p className="text-muted-foreground text-lg mb-4">لا توجد منتجات في هذه الفئة حالياً</p>  
-        {isAdmin && (  
-          <Button>  
-            <Plus className="h-4 w-4 mr-2" />  
-            إضافة أول منتج  
-          </Button>  
-        )}  
+        {searchQuery ? (
+          <>
+            <p className="text-muted-foreground text-lg mb-4">لا توجد منتجات تطابق البحث "{searchQuery}"</p>
+            <Button variant="outline" onClick={() => setSearchQuery('')}>
+              مسح البحث
+            </Button>
+          </>
+        ) : (
+          <>
+            <p className="text-muted-foreground text-lg mb-4">لا توجد منتجات في هذه الفئة حالياً</p>  
+            {isAdmin && (  
+              <Button onClick={handleAddProduct}>  
+                <Plus className="h-4 w-4 mr-2" />  
+                إضافة أول منتج  
+              </Button>  
+            )}
+          </>
+        )}
       </div>  
     ) : (  
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">  
-        {products.map((product) => (  
+        {filteredProducts.map((product) => (
           <Card key={product.id} className="group relative overflow-hidden hover-scale">  
             {isAdmin && (  
               <Button  
                 variant="ghost"  
                 size="sm"  
-                className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"  
+                className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleEditProduct(product);
+                }}
               >  
                 <Edit className="h-4 w-4" />  
               </Button>  
-            )}  
+            )}
               
             <Link to={`/product/${product.id}`} className="block">  
               <div className="aspect-square overflow-hidden">  
@@ -249,7 +320,16 @@ return (
         ))}  
       </div>  
     )}  
-  </div>  
+  </div>
+  
+  {/* Product Management Dialog */}
+  <ProductManagementDialog
+    isOpen={isProductDialogOpen}
+    onClose={() => setIsProductDialogOpen(false)}
+    product={editingProduct}
+    categories={categories}
+    onSuccess={handleProductDialogSuccess}
+  />
 </div>
 
 );
