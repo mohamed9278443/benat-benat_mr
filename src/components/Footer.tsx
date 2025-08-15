@@ -19,35 +19,38 @@ export default function Footer() {
                   href={`tel:${settings.whatsapp_number || '+222 49055137'}`}
                   className="text-primary hover:underline"
                 >
-                  {settings.whatsapp_number || 'phone'}
+                  {settings.whatsapp_number || '+222 49055137'}
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Mail className="h-4 w-4 text-primary" />
                 <a 
-                  href={`mailto:${settings.email || 'moubarakouhoussein@gmail.com'}`}
+                  href={`mailto:${settings.site_email || 'moubarakouhoussein@gmail.com'}`}
                   className="text-primary hover:underline"
                 >
-                  {settings.email || 'Email'}
+                  {settings.site_email || 'moubarakouhoussein@gmail.com'}
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
                 <a 
-                  href={settings.location_url || 'https://maps.app.goo.gl/vE3k4Ts1shPzQmNd7'}
+                  href={settings.map_link || 'https://maps.app.goo.gl/vE3k4Ts1shPzQmNd7'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  الموقع الجغرافي
+                  {settings.contact_address || 'الموقع الجغرافي'}
                 </a>
               </div>
             </div>
           </div>
-          {/* Logo */}
+          {/* Logo & Description */}
           <div>
-            <h2 className="text-2xl font-bold text-primary mb-2">{settings.site_name_ar || 'بنات'}</h2>
-            <p className="text-muted-foreground">{settings.site_name_en || 'BENAT'}</p>
+            <h2 className="text-2xl font-bold text-primary mb-2">{settings.site_name || 'بنات'}</h2>
+            <p className="text-muted-foreground mb-3">{settings.site_description || 'متجر للأزياء النسائية'}</p>
+            {settings.footer_text && (
+              <p className="text-sm text-muted-foreground">{settings.footer_text}</p>
+            )}
           </div>
           {/* Quick Links */}
           <div>
@@ -61,7 +64,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground">
-            © 2025 متجر {settings.site_name_ar || 'بنات'}/{settings.site_name_en || 'BENAT'}. جميع الحقوق محفوظة.
+            © 2025 متجر {settings.site_name || 'بنات'}. جميع الحقوق محفوظة.
           </p>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { ArrowRight, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { WhatsAppOrderButton } from '@/components/WhatsAppOrderButton';
 import { useToast } from '@/hooks/use-toast';
+import Footer from '@/components/Footer';
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -219,6 +220,7 @@ export default function Cart() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

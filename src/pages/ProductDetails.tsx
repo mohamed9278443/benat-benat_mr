@@ -9,6 +9,7 @@ import { useCart } from '@/contexts/CartContext';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { ImageGallery } from '@/components/ImageGallery';
 import { StarRating } from '@/components/StarRating';
+import Footer from '@/components/Footer';
 
 interface Product {
   id: string;
@@ -228,6 +229,7 @@ export default function ProductDetails() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
