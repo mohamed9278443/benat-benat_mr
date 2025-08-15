@@ -49,7 +49,9 @@ export const useSiteSettings = () => {
     try {
       const { error } = await supabase
         .from('site_settings')
-        .upsert({ setting_key: key, setting_value: value });
+        .upsert({ setting_key: key, setting_value: value }, {
+          onConflict: 'setting_key'
+        });
 
       if (error) throw error;
 
