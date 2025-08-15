@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          operation: string
+          performed_at: string | null
+          table_name: string
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          operation: string
+          performed_at?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          operation?: string
+          performed_at?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       cart: {
         Row: {
           created_at: string
@@ -350,6 +386,15 @@ export type Database = {
       is_admin: {
         Args: { user_uuid?: string }
         Returns: boolean
+      }
+      log_auth_attempt: {
+        Args: {
+          attempt_type: string
+          details?: Json
+          success: boolean
+          user_email?: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

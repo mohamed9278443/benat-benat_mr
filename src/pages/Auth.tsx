@@ -87,6 +87,20 @@ const Auth = () => {
         }
       });
 
+      // Log authentication attempt
+      setTimeout(async () => {
+        try {
+          await supabase.rpc('log_auth_attempt', {
+            attempt_type: 'signup',
+            success: !error,
+            user_email: email,
+            details: error ? { error_message: error.message } : null
+          });
+        } catch (logError) {
+          console.error('Failed to log auth attempt:', logError);
+        }
+      }, 0);
+
       if (error) {
         if (error.message.includes("already been registered")) {
           toast({
@@ -136,6 +150,20 @@ const Auth = () => {
         password,
       });
 
+      // Log authentication attempt
+      setTimeout(async () => {
+        try {
+          await supabase.rpc('log_auth_attempt', {
+            attempt_type: 'signin',
+            success: !error,
+            user_email: email,
+            details: error ? { error_message: error.message } : null
+          });
+        } catch (logError) {
+          console.error('Failed to log auth attempt:', logError);
+        }
+      }, 0);
+
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
           toast({
@@ -177,6 +205,20 @@ const Auth = () => {
           },
         }
       });
+
+      // Log authentication attempt
+      setTimeout(async () => {
+        try {
+          await supabase.rpc('log_auth_attempt', {
+            attempt_type: 'oauth_google',
+            success: !error,
+            user_email: null,
+            details: error ? { error_message: error.message } : null
+          });
+        } catch (logError) {
+          console.error('Failed to log auth attempt:', logError);
+        }
+      }, 0);
 
       if (error) {
         console.error('Google OAuth Error:', error);
