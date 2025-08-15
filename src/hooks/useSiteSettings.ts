@@ -63,6 +63,22 @@ export const useSiteSettings = () => {
 
   useEffect(() => {
     fetchSettings();
+    
+    // Real-time subscription for site settings
+    const channel = supabase
+      .channel('site-settings-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'site_settings'
+      }, () => {
+        fetchSettings();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return {

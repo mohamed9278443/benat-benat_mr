@@ -14,17 +14,47 @@ export const MainVideo: React.FC<MainVideoProps> = ({ videoUrl, className = '' }
   const [showControls, setShowControls] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Convert YouTube URL to embed URL
-  const getYouTubeEmbedUrl = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      return `https://www.youtube.com/embed/${match[2]}?enablejsapi=1`;
+  // Convert video URLs to embed format
+  const getEmbedUrl = (url: string) => {
+    // YouTube URLs
+    const youtubeRegExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const youtubeMatch = url.match(youtubeRegExp);
+    if (youtubeMatch && youtubeMatch[2].length === 11) {
+      return `https://www.youtube.com/embed/${youtubeMatch[2]}?enablejsapi=1`;
     }
+
+    // TikTok URLs
+    if (url.includes('tiktok.com')) {
+      const tiktokRegExp = /(?:https?:\/\/)?(?:www\.)?(?:vm\.)?tiktok\.com\/[@\w\-._]*\/video\/(\d+)/;
+      const tiktokMatch = url.match(tiktokRegExp);
+      if (tiktokMatch) {
+        return `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`;
+      }
+      // Handle short URLs
+      const shortRegExp = /(?:https?:\/\/)?(?:vm\.)?tiktok\.com\/(\w+)/;
+      const shortMatch = url.match(shortRegExp);
+      if (shortMatch) {
+        return url; // TikTok short URLs need to be handled differently
+      }
+    }
+
+    // Facebook URLs
+    if (url.includes('facebook.com') || url.includes('fb.watch')) {
+      const fbRegExp = /(?:https?:\/\/)?(?:www\.)?(?:facebook\.com\/watch\/?\?v=|fb\.watch\/)(\d+)/;
+      const fbMatch = url.match(fbRegExp);
+      if (fbMatch) {
+        return `https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v=${fbMatch[1]}`;
+      }
+    }
+
     return url;
   };
 
-  const isYouTubeUrl = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
+  const isExternalVideo = videoUrl.includes('youtube.com') || 
+                         videoUrl.includes('youtu.be') || 
+                         videoUrl.includes('tiktok.com') || 
+                         videoUrl.includes('facebook.com') || 
+                         videoUrl.includes('fb.watch');
 
   useEffect(() => {
     const video = videoRef.current;
@@ -87,12 +117,14 @@ export const MainVideo: React.FC<MainVideoProps> = ({ videoUrl, className = '' }
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (isYouTubeUrl) {
+  if (isExternalVideo) {
+    const embedUrl = getEmbedUrl(videoUrl);
+    
     return (
       <div className={`w-full max-w-4xl mx-auto ${className}`}>
         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
           <iframe
-            src={getYouTubeEmbedUrl(videoUrl)}
+            src={embedUrl}
             className="absolute top-0 left-0 w-full h-full rounded-lg"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, X } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Save, X, Upload, Link as LinkIcon } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useToast } from '@/hooks/use-toast';
+import { VideoUpload } from '@/components/VideoUpload';
 
 interface SiteSettingsDialogProps {
   open: boolean;
@@ -17,7 +19,7 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
   open,
   onOpenChange
 }) => {
-  const { settings, updateSetting, loading } = useSiteSettings();
+  const { settings, updateSetting, loading, refetch } = useSiteSettings();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     site_name: '',
@@ -54,6 +56,9 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
       );
       
       await Promise.all(promises);
+      
+      // Refetch settings to ensure immediate update
+      await refetch();
       
       toast({
         title: "تم الحفظ",
@@ -149,14 +154,30 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="main_video_url">رابط الفيديو الرئيسي</Label>
-            <Input
-              id="main_video_url"
-              type="url"
-              value={formData.main_video_url}
-              onChange={(e) => setFormData({ ...formData, main_video_url: e.target.value })}
-              placeholder="https://youtu.be/K06DUDGkDFc?si=-xhRsWl6-iKyBPMs"
-            />
+            <Label>الفيديو الرئيسي</Label>
+            <Tabs defaultValue="url" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="url">رابط فيديو</TabsTrigger>
+                <TabsTrigger value="upload">رفع فيديو</TabsTrigger>
+              </TabsList>
+              <TabsContent value="url" className="space-y-2">
+                <Label htmlFor="main_video_url">رابط الفيديو (يوتيوب، تيك توك، فيسبوك)</Label>
+                <Input
+                  id="main_video_url"
+                  type="url"
+                  value={formData.main_video_url}
+                  onChange={(e) => setFormData({ ...formData, main_video_url: e.target.value })}
+                  placeholder="https://youtu.be/... أو https://tiktok.com/... أو https://facebook.com/watch/..."
+                />
+              </TabsContent>
+              <TabsContent value="upload">
+                <VideoUpload
+                  currentVideoUrl={formData.main_video_url}
+                  onVideoUpload={(url) => setFormData({ ...formData, main_video_url: url })}
+                  onVideoRemove={() => setFormData({ ...formData, main_video_url: '' })}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
 
           <div className="space-y-2">
