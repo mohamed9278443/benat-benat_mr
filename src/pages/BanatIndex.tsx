@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Search, MapPin, Phone, Mail, Edit, Plus } from "lucide-react";
+import { MapPin, Phone, Mail, Plus } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
-import { CartIcon } from '@/components/CartIcon';
 import { CategoryCard } from '@/components/CategoryCard';
 import { MainVideo } from '@/components/MainVideo';
+import Header from '@/components/Header';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useCategories } from '@/hooks/useCategories';
 import { CategoryManagementDialog } from '@/components/CategoryManagementDialog';
@@ -233,60 +232,7 @@ const BanatIndex = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Right side - User actions */}
-            <div className="flex items-center gap-4">
-              <CartIcon />
-              {user ? (
-                <div className="flex items-center gap-2">
-                  {isAdmin && (
-                    <Link to="/admin">
-                      <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/20">
-                        الإدارة
-                      </Button>
-                    </Link>
-                  )}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={signOut}
-                    className="text-primary-foreground hover:bg-primary-foreground/20"
-                  >
-                    تسجيل خروج
-                  </Button>
-                </div>
-              ) : (
-                <Link to="/auth">
-                  <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/20">
-                    <User className="h-4 w-4 mr-2" />
-                    تسجيل الدخول
-                  </Button>
-                </Link>
-              )}
-            </div>
-            {/* Center - Logo */}
-            <div className="text-center">
-              <h1 className="text-2xl font-bold">{settings.site_name_ar || 'بنات'}</h1>
-              <p className="text-sm opacity-90">{settings.site_name_en || 'Benat'}</p>
-            </div>
-            {/* Left side - Search */}
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="البحث في المنتجات والفئات..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 pr-4 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-foreground/70" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header searchQuery={searchQuery} onSearchChange={handleSearch} />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-12">
         <div className="container mx-auto px-4 text-center">
