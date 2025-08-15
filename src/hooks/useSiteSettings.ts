@@ -11,16 +11,31 @@ export const useSiteSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('setting_key, setting_value');
+      // Try to get user session to determine if admin
+      const { data: session } = await supabase.auth.getSession();
+      
+      let data, error;
+      
+      if (session?.session?.user) {
+        // If authenticated, try to get all settings (admins will see all, users will see public only)
+        const result = await supabase
+          .from('site_settings')
+          .select('setting_key, setting_value');
+        data = result.data;
+        error = result.error;
+      } else {
+        // If not authenticated, use the public function for non-sensitive settings
+        const result = await supabase.rpc('get_public_site_settings');
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
-      const settingsObj = data.reduce((acc, item) => {
+      const settingsObj = data?.reduce((acc, item) => {
         acc[item.setting_key] = item.setting_value || '';
         return acc;
-      }, {} as SiteSettings);
+      }, {} as SiteSettings) || {};
 
       setSettings(settingsObj);
     } catch (error) {
