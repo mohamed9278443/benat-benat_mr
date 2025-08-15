@@ -19,7 +19,7 @@ export default function Footer() {
                   href={`tel:${settings.whatsapp_number || '+222 49055137'}`}
                   className="text-primary hover:underline"
                 >
-                  {settings.whatsapp_number || '+222 49055137'}
+                  {settings.whatsapp_number || 'phone'}
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
