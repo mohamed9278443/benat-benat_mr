@@ -383,6 +383,13 @@ export type Database = {
           setting_value: string
         }[]
       }
+      get_site_settings_with_permissions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          setting_key: string
+          setting_value: string
+        }[]
+      }
       is_admin: {
         Args: { user_uuid?: string }
         Returns: boolean
