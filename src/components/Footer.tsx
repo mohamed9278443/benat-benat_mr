@@ -28,7 +28,7 @@ export default function Footer() {
                   href={`mailto:${settings.email || 'moubarakouhoussein@gmail.com'}`}
                   className="text-primary hover:underline"
                 >
-                  {settings.email || 'moubarakouhoussein@gmail.com'}
+                  {settings.email || 'Email'}
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
