@@ -164,7 +164,7 @@ const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange }) => {
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           <div className="flex flex-col items-center leading-none">
             <span className="text-2xl font-bold text-primary-foreground">
-              {settings.site_name || 'بــــــنات'}
+              بــــــنات
             </span>
             <span className="text-sm font-light text-primary-foreground/90 tracking-wide">
               BANAT

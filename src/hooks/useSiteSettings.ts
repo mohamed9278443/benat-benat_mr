@@ -47,14 +47,23 @@ export const useSiteSettings = () => {
 
   const updateSetting = async (key: string, value: string) => {
     try {
-      const { error } = await supabase
+      console.log('Updating setting:', key, '=', value);
+      
+      const { data, error } = await supabase
         .from('site_settings')
         .upsert({ setting_key: key, setting_value: value }, {
           onConflict: 'setting_key'
-        });
+        })
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating setting:', error);
+        throw error;
+      }
 
+      console.log('Setting updated successfully:', data);
+      
+      // Update local state immediately
       setSettings(prev => ({ ...prev, [key]: value }));
       return true;
     } catch (error) {
