@@ -7,14 +7,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { supabase } from '@/integrations/supabase/client';
+import { WhatsAppOrderButton } from '@/components/WhatsAppOrderButton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { items, totalPrice, updateQuantity, removeFromCart, clearCart, loading } = useCart();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { items, totalPrice, updateQuantity, removeFromCart, loading } = useCart();
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     email: '',
@@ -31,92 +29,7 @@ export default function Cart() {
     }
   };
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (items.length === 0) {
-      toast({
-        title: "السلة فارغة",
-        description: "يرجى إضافة منتجات للسلة قبل تقديم الطلب",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.address) {
-      toast({
-        title: "بيانات ناقصة",
-        description: "يرجى تعبئة جميع الحقول المطلوبة",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "يجب تسجيل الدخول",
-          description: "يرجى تسجيل الدخول لتقديم الطلب",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create order
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          total_amount: totalPrice,
-          status: 'pending',
-          customer_name: customerInfo.name,
-          customer_email: customerInfo.email,
-          customer_phone: customerInfo.phone,
-          shipping_address: customerInfo.address,
-          notes: customerInfo.notes || null
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      // Create order items
-      const orderItems = items.map(item => ({
-        order_id: order.id,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        price: item.product.price
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
-
-      // Clear cart
-      await clearCart();
-
-      toast({
-        title: "تم تقديم الطلب بنجاح",
-        description: "سيتم التواصل معك قريباً لتأكيد الطلب",
-      });
-
-      navigate('/');
-    } catch (error) {
-      console.error('Error submitting order:', error);
-      toast({
-        title: "خطأ في تقديم الطلب",
-        description: "حدث خطأ أثناء تقديم الطلب، يرجى المحاولة مرة أخرى",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const isFormValid = customerInfo.name && customerInfo.email && customerInfo.phone && customerInfo.address;
 
   const handleGoBack = () => {
     navigate(-1);
@@ -240,68 +153,67 @@ export default function Cart() {
                 <CardTitle>معلومات التوصيل</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmitOrder} className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">الاسم الكامل *</Label>
-                    <Input
-                      id="name"
-                      value={customerInfo.name}
-                      onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="email">البريد الإلكتروني *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={customerInfo.email}
-                      onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="phone">رقم الهاتف *</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={customerInfo.phone}
-                      onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="address">عنوان التوصيل *</Label>
-                    <Textarea
-                      id="address"
-                      value={customerInfo.address}
-                      onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-                      rows={3}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="notes">ملاحظات إضافية</Label>
-                    <Textarea
-                      id="notes"
-                      value={customerInfo.notes}
-                      onChange={(e) => setCustomerInfo({...customerInfo, notes: e.target.value})}
-                      rows={2}
-                    />
-                  </div>
-                  
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isSubmitting || loading}
-                  >
-                    {isSubmitting ? 'جاري تقديم الطلب...' : 'تقديم الطلب'}
-                  </Button>
-                </form>
+                 <div className="space-y-4">
+                   <div>
+                     <Label htmlFor="name">الاسم الكامل *</Label>
+                     <Input
+                       id="name"
+                       value={customerInfo.name}
+                       onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                     />
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="email">البريد الإلكتروني *</Label>
+                     <Input
+                       id="email"
+                       type="email"
+                       value={customerInfo.email}
+                       onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                     />
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="phone">رقم الهاتف *</Label>
+                     <Input
+                       id="phone"
+                       type="tel"
+                       value={customerInfo.phone}
+                       onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                     />
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="address">عنوان التوصيل *</Label>
+                     <Textarea
+                       id="address"
+                       value={customerInfo.address}
+                       onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
+                       rows={3}
+                     />
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="notes">ملاحظات إضافية</Label>
+                     <Textarea
+                       id="notes"
+                       value={customerInfo.notes}
+                       onChange={(e) => setCustomerInfo({...customerInfo, notes: e.target.value})}
+                       rows={2}
+                     />
+                   </div>
+                   
+                   <WhatsAppOrderButton
+                     orderData={{
+                       customerName: customerInfo.name,
+                       customerPhone: customerInfo.phone,
+                       customerEmail: customerInfo.email,
+                       customerAddress: customerInfo.address,
+                       notes: customerInfo.notes
+                     }}
+                     disabled={!isFormValid || loading}
+                   />
+                 </div>
               </CardContent>
             </Card>
           </div>

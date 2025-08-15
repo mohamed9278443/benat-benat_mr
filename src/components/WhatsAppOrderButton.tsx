@@ -7,7 +7,8 @@ import { useSiteSettings } from '@/hooks/useSiteSettings';
 interface OrderFormData {
   customerName: string;
   customerPhone: string;
-  customerCity: string;
+  customerEmail: string;
+  customerAddress: string;
   notes: string;
 }
 
@@ -33,7 +34,10 @@ export const WhatsAppOrderButton: React.FC<WhatsAppOrderButtonProps> = ({
       message += `${index + 1}. ${item.product.name}\n`;
       message += `   الكمية: ${item.quantity}\n`;
       message += `   السعر: ${item.product.price.toFixed(2)} أوقية\n`;
-      message += `   الرابط: ${window.location.origin}/product/${item.product_id}\n`;
+      message += `   رابط المنتج: ${window.location.origin}/product/${item.product_id}\n`;
+      if (item.product.image_url) {
+        message += `   رابط الصورة: ${item.product.image_url}\n`;
+      }
       message += `\n`;
     });
     
@@ -43,7 +47,8 @@ export const WhatsAppOrderButton: React.FC<WhatsAppOrderButtonProps> = ({
     message += `معلومات العميل:\n`;
     message += `الاسم: ${orderData.customerName}\n`;
     message += `رقم الهاتف: ${orderData.customerPhone}\n`;
-    message += `المدينة: ${orderData.customerCity}\n`;
+    message += `البريد الإلكتروني: ${orderData.customerEmail}\n`;
+    message += `عنوان التوصيل: ${orderData.customerAddress}\n`;
     
     if (orderData.notes) {
       message += `ملاحظات إضافية: ${orderData.notes}\n`;
