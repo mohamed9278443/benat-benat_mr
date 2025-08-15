@@ -73,7 +73,8 @@ export const useSiteSettings = () => {
         event: '*',
         schema: 'public',
         table: 'site_settings'
-      }, () => {
+      }, (payload) => {
+        console.log('Site settings changed:', payload);
         fetchSettings();
       })
       .subscribe();

@@ -51,22 +51,29 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
     e.preventDefault();
     
     try {
+      // Update all form fields
       const promises = Object.entries(formData).map(([key, value]) =>
         updateSetting(key, value)
       );
       
-      await Promise.all(promises);
+      const results = await Promise.all(promises);
       
-      // Refetch settings to ensure immediate update
-      await refetch();
-      
-      toast({
-        title: "تم الحفظ",
-        description: "تم حفظ إعدادات الموقع بنجاح"
-      });
-      
-      onOpenChange(false);
+      // Check if all updates succeeded
+      if (results.every(result => result)) {
+        // Force refetch to update all components immediately
+        await refetch();
+        
+        toast({
+          title: "تم الحفظ",
+          description: "تم حفظ إعدادات الموقع بنجاح"
+        });
+        
+        onOpenChange(false);
+      } else {
+        throw new Error('Some settings failed to update');
+      }
     } catch (error) {
+      console.error('Error saving settings:', error);
       toast({
         title: "خطأ",
         description: "حدث خطأ أثناء حفظ الإعدادات",
