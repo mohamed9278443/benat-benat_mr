@@ -12,6 +12,8 @@ export const MainVideo: React.FC<MainVideoProps> = ({ videoUrl, className = '' }
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(false);
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [showThumbnail, setShowThumbnail] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Convert video URLs to embed format
@@ -56,23 +58,55 @@ export const MainVideo: React.FC<MainVideoProps> = ({ videoUrl, className = '' }
                          videoUrl.includes('facebook.com') || 
                          videoUrl.includes('fb.watch');
 
+  // Generate thumbnail from video
+  const generateThumbnail = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.currentTime = 1; // Capture frame at 1 second
+    
+    video.addEventListener('seeked', function captureThumbnail() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (ctx) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setThumbnail(thumbnailDataUrl);
+      }
+      
+      video.currentTime = 0; // Reset to beginning
+      video.removeEventListener('seeked', captureThumbnail);
+    });
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const updateTime = () => setCurrentTime(video.currentTime);
-    const updateDuration = () => setDuration(video.duration);
+    const updateDuration = () => {
+      setDuration(video.duration);
+      if (!thumbnail) {
+        generateThumbnail();
+      }
+    };
 
     video.addEventListener('timeupdate', updateTime);
     video.addEventListener('loadedmetadata', updateDuration);
     video.addEventListener('ended', () => setIsPlaying(false));
+    video.addEventListener('play', () => setShowThumbnail(false));
 
     return () => {
       video.removeEventListener('timeupdate', updateTime);
       video.removeEventListener('loadedmetadata', updateDuration);
       video.removeEventListener('ended', () => setIsPlaying(false));
+      video.removeEventListener('play', () => setShowThumbnail(false));
     };
-  }, []);
+  }, [thumbnail]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -82,6 +116,7 @@ export const MainVideo: React.FC<MainVideoProps> = ({ videoUrl, className = '' }
       video.pause();
     } else {
       video.play();
+      setShowThumbnail(false);
     }
     setIsPlaying(!isPlaying);
   };
@@ -146,11 +181,23 @@ export const MainVideo: React.FC<MainVideoProps> = ({ videoUrl, className = '' }
         ref={videoRef}
         className="w-full h-auto"
         onClick={togglePlay}
-        poster="/placeholder.svg"
+        poster={thumbnail || "/placeholder.svg"}
       >
         <source src={videoUrl} type="video/mp4" />
         متصفحك لا يدعم تشغيل الفيديو.
       </video>
+
+      {/* Custom Thumbnail Overlay */}
+      {showThumbnail && thumbnail && !isPlaying && (
+        <div 
+          className="absolute inset-0 cursor-pointer bg-black/20 flex items-center justify-center"
+          onClick={togglePlay}
+        >
+          <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors">
+            <Play className="h-8 w-8 text-black ml-1" />
+          </div>
+        </div>
+      )}
 
       {showControls && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
