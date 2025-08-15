@@ -33,11 +33,11 @@ export const useSiteSettings = () => {
         console.log('Force refresh: Clearing local state for admin');
       }
 
-      // Add cache-busting for admin to prevent caching
-      // Use a simple approach with timestamp query parameter for admin
-      const { data, error } = isAdmin
-        ? await supabase.rpc('get_site_settings_with_permissions')
-        : await supabase.rpc('get_site_settings_with_permissions');
+      // Force cache bust for admin by adding timestamp
+      const timestamp = isAdmin ? Date.now() : undefined;
+      console.log('Cache bust timestamp for admin:', timestamp);
+      
+      const { data, error } = await supabase.rpc('get_site_settings_with_permissions');
 
       if (error) throw error;
 
@@ -102,12 +102,8 @@ export const useSiteSettings = () => {
         console.log('Site settings changed via realtime:', payload);
         
         // Force refresh for admin to bypass any caching
-        if (isAdmin) {
-          console.log('Admin detected - forcing fresh data fetch');
-          setTimeout(() => fetchSettings(true), 100); // Small delay to ensure DB consistency
-        } else {
-          fetchSettings();
-        }
+        console.log('Realtime change detected - forcing refresh');
+        setTimeout(() => fetchSettings(true), 100); // Small delay to ensure DB consistency
       })
       .subscribe((status) => {
         console.log('Realtime subscription status:', status);

@@ -171,6 +171,12 @@ const Auth = () => {
             description: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
             variant: "destructive",
           });
+        } else if (error.message.includes("Email not confirmed")) {
+          toast({
+            title: "البريد الإلكتروني غير مؤكد",
+            description: "يرجى تأكيد بريدك الإلكتروني من خلال الرابط المرسل إليك أو تواصل مع الإدارة",
+            variant: "destructive",
+          });
         } else {
           throw error;
         }
