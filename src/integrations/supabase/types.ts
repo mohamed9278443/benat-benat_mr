@@ -347,6 +347,10 @@ export type Database = {
           setting_value: string
         }[]
       }
+      is_admin: {
+        Args: { user_uuid?: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
