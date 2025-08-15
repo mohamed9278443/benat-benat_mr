@@ -124,7 +124,7 @@ export const SiteSettingsDialog: React.FC<SiteSettingsDialogProps> = ({
                 id="whatsapp_number"
                 value={formData.whatsapp_number}
                 onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
-                placeholder="+22236123456"
+                placeholder="+222 49055137"
               />
             </div>
           </div>
