@@ -122,8 +122,8 @@ const BanatIndex = () => {
     } catch (error) {
       console.error('Error fetching products:', error);
       toast({
-        title: 'Ø®Ø·Ø£',
-        description: 'Ø­Ø¯Ø« Ø®Ø·Ø£ ÙÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª',
+        title: 'خطأ',
+        description: 'حدث خطأ في تحميل المنتجات',
         variant: 'destructive',
       });
     } finally {
@@ -157,12 +157,12 @@ const BanatIndex = () => {
       });
       if (error) throw error;
       toast({
-        title: 'Ù†Ø¬Ø­ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„',
-        description: 'ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù†Ø¬Ø§Ø­',
+        title: 'نجح تسجيل الدخول',
+        description: 'تم تسجيل الدخول بنجاح',
       });
     } catch (error: any) {
       toast({
-        title: 'Ø®Ø·Ø£ ÙÙŠ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„',
+        title: 'خطأ في تسجيل الدخول',
         description: error.message,
         variant: 'destructive',
       });
@@ -176,12 +176,12 @@ const BanatIndex = () => {
       setUser(null);
       setIsAdmin(false);
       toast({
-        title: 'ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬',
-        description: 'ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬ Ø¨Ù†Ø¬Ø§Ø­',
+        title: 'تم تسجيل الخروج',
+        description: 'تم تسجيل الخروج بنجاح',
       });
     } catch (error: any) {
       toast({
-        title: 'Ø®Ø·Ø£',
+        title: 'خطأ',
         description: error.message,
         variant: 'destructive',
       });
@@ -208,16 +208,16 @@ const BanatIndex = () => {
   const handleCategoryDialogSuccess = () => {
     refetchCategories();
     toast({
-      title: 'Ù†Ø¬Ø­ Ø§Ù„Ø¹Ù…Ù„',
-      description: 'ØªÙ… Ø­ÙØ¸ Ø§Ù„ÙØ¦Ø© Ø¨Ù†Ø¬Ø§Ø­',
+      title: 'نجح العمل',
+      description: 'تم حفظ الفئة بنجاح',
     });
   };
 
   const handleProductDialogSuccess = () => {
     fetchProducts();
     toast({
-      title: 'Ù†Ø¬Ø­ Ø§Ù„Ø¹Ù…Ù„',
-      description: 'ØªÙ… Ø­ÙØ¸ Ø§Ù„Ù…Ù†ØªØ¬ Ø¨Ù†Ø¬Ø§Ø­',
+      title: 'نجح العمل',
+      description: 'تم حفظ المنتج بنجاح',
     });
   };
 
@@ -226,7 +226,7 @@ const BanatIndex = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground mt-4">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>
+          <p className="text-muted-foreground mt-4">جاري التحميل...</p>
         </div>
       </div>
     );
@@ -240,22 +240,22 @@ const BanatIndex = () => {
       <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-12">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨ÙƒÙ… ÙÙŠ Ù…ØªØ¬Ø± {settings.site_name_ar || 'Ø¨Ù†Ø§Øª'}
+            مرحباً بكم في متجر {settings.site_name_ar || 'بنات'}
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Ø£Ø¬Ù…Ù„ Ø§Ù„Ù…Ù„Ø§Ø¨Ø³ Ø§Ù„Ù†Ø³Ø§Ø¦ÙŠØ© ÙˆØ§Ù„Ø­Ù‚Ø§Ø¦Ø¨ ÙˆØ§Ù„Ø¹Ø·ÙˆØ± Ù„Ù„Ø³ÙˆÙ‚ Ø§Ù„Ù…ÙˆØ±ÙŠØªØ§Ù†ÙŠ
+            أجمل الملابس النسائية والحقائب والعطور للسوق الموريتاني
           </p>
           <div className="flex flex-wrap gap-2 justify-center max-w-md mx-auto">
             <Button size="sm" asChild className="flex-1 min-w-[120px]">
-              <Link to="#categories">ØªØµÙØ­ Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª</Link>
+              <Link to="#categories">تصفح المنتجات</Link>
             </Button>
             <Button variant="outline" size="sm" asChild className="flex-1 min-w-[120px]">
-              <Link to="/cart">Ø³Ù„Ø© Ø§Ù„Ù…Ø´ØªØ±ÙŠØ§Øª</Link>
+              <Link to="/cart">سلة المشتريات</Link>
             </Button>
             {isAdmin && (
               <Button variant="secondary" size="sm" onClick={handleAddProduct} className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
-                Ø¥Ø¶Ø§ÙØ© Ù…Ù†ØªØ¬
+                إضافة منتج
               </Button>
             )}
           </div>
@@ -266,17 +266,17 @@ const BanatIndex = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">
-              {searchQuery ? 'Ù†ØªØ§Ø¦Ø¬ Ø§Ù„Ø¨Ø­Ø«' : 'Ø§Ù„ÙØ¦Ø§Øª Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©'}
+              {searchQuery ? 'نتائج البحث' : 'الفئات الرئيسية'}
               {searchQuery && (
                 <span className="text-xl text-muted-foreground block mt-2">
-                  Ø§Ù„Ø¨Ø­Ø« Ø¹Ù†: "{searchQuery}"
+                  البحث عن: "{searchQuery}"
                 </span>
               )}
             </h2>
             {isAdmin && (
               <Button className="gap-2" onClick={handleAddCategory}>
                 <Plus className="h-4 w-4" />
-                Ø¥Ø¶Ø§ÙØ© ÙØ¦Ø©
+                إضافة فئة
               </Button>
             )}
           </div>
@@ -286,7 +286,7 @@ const BanatIndex = () => {
             <>
               {filteredCategories.length > 0 && (
                 <>
-                  <h3 className="text-xl font-semibold mb-4">Ø§Ù„ÙØ¦Ø§Øª ({filteredCategories.length})</h3>
+                  <h3 className="text-xl font-semibold mb-4">الفئات ({filteredCategories.length})</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                     {filteredCategories.map((category) => (
                       <CategoryCard
@@ -302,7 +302,7 @@ const BanatIndex = () => {
               
               {filteredProducts.length > 0 && (
                 <>
-                  <h3 className="text-xl font-semibold mb-4">Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª ({filteredProducts.length})</h3>
+                  <h3 className="text-xl font-semibold mb-4">المنتجات ({filteredProducts.length})</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {filteredProducts.map((product) => (
                       <div key={product.id} className="bg-card rounded-lg overflow-hidden shadow-sm border">
@@ -319,7 +319,7 @@ const BanatIndex = () => {
                               {product.name}
                             </h4>
                           </Link>
-                          <p className="text-primary font-bold mt-2">{product.price} Ø£ÙˆÙ‚ÙŠØ©</p>
+                          <p className="text-primary font-bold mt-2">{product.price} أوقية</p>
                         </div>
                       </div>
                     ))}
@@ -329,9 +329,9 @@ const BanatIndex = () => {
               
               {filteredCategories.length === 0 && filteredProducts.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-muted-foreground text-lg mb-4">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù†ØªØ§Ø¦Ø¬ Ù„Ù„Ø¨Ø­Ø« "{searchQuery}"</p>
+                  <p className="text-muted-foreground text-lg mb-4">لا توجد نتائج للبحث "{searchQuery}"</p>
                   <Button variant="outline" onClick={() => setSearchQuery('')}>
-                    Ù…Ø³Ø­ Ø§Ù„Ø¨Ø­Ø«
+                    مسح البحث
                   </Button>
                 </div>
               )}
@@ -355,8 +355,8 @@ const BanatIndex = () => {
         <section className="py-12 bg-accent/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 relative">
-              <h2 className="text-3xl font-bold text-foreground mb-4">ÙØ¯ÙŠÙˆ...</h2>
-              <p className="text-muted-foreground">ØªØ¹Ø±ÙÙŠ Ø£ÙƒØ«Ø± Ø¹Ù„Ù‰ Ù…Ù†ØªØ¬Ø§ØªÙ†Ø§</p>
+              <h2 className="text-3xl font-bold text-foreground mb-4">فديو...</h2>
+              <p className="text-muted-foreground">تعرفي أكثر على منتجاتنا</p>
               {isAdmin && (
                 <Button
                   size="sm"
@@ -365,7 +365,7 @@ const BanatIndex = () => {
                   onClick={() => setIsVideoEditDialogOpen(true)}
                 >
                   <Edit className="h-4 w-4" />
-                  ØªØ­Ø±ÙŠØ± Ø§Ù„ÙÙŠØ¯ÙŠÙˆ
+                  تحرير الفيديو
                 </Button>
               )}
             </div>
