@@ -9,11 +9,13 @@ import { ArrowRight, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { WhatsAppOrderButton } from '@/components/WhatsAppOrderButton';
 import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function Cart() {
   const navigate = useNavigate();
   const { items, totalPrice, updateQuantity, removeFromCart, loading } = useCart();
+  const [searchQuery, setSearchQuery] = useState('');
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     email: '',
@@ -39,6 +41,7 @@ export default function Cart() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
+        <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <div className="container mx-auto px-4 py-8">
           <Button
             variant="ghost"
@@ -64,6 +67,7 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"

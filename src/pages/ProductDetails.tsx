@@ -9,6 +9,7 @@ import { useCart } from '@/contexts/CartContext';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { ImageGallery } from '@/components/ImageGallery';
 import { StarRating } from '@/components/StarRating';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 interface Product {
@@ -38,6 +39,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState<Product | null>(null);
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const { addToCart, loading: cartLoading } = useCart();
 
   useEffect(() => {
@@ -129,6 +131,7 @@ export default function ProductDetails() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button

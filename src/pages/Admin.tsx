@@ -19,6 +19,7 @@ import ImageUpload from "@/components/ImageUpload";
 import { VideoUpload } from "@/components/VideoUpload";
 import { SiteSettingsDialog } from "@/components/SiteSettingsDialog";
 import { useCategories } from "@/hooks/useCategories";
+import Header from "@/components/Header";
 
 interface Product {
   id: string;
@@ -50,6 +51,7 @@ const Admin = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
@@ -378,13 +380,15 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50" dir="rtl">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-amber-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      
+      {/* Admin Info Bar */}
+      <div className="bg-white/80 backdrop-blur-md border-b border-amber-200">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Settings className="h-8 w-8 text-amber-600" />
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+              <Settings className="h-6 w-6 text-amber-600" />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 لوحة تحكم الإدارة
               </h1>
             </div>
@@ -396,14 +400,10 @@ const Admin = () => {
               <span className="text-sm text-muted-foreground">
                 مرحباً، {profile.full_name || profile.email}
               </span>
-              <Button variant="outline" onClick={() => navigate("/")}>
-                <ArrowRight className="h-4 w-4 ml-2" />
-                العودة للموقع
-              </Button>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="container mx-auto px-4 py-8">
         {/* Stats Cards */}

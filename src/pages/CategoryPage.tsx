@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ProductManagementDialog } from '@/components/ProductManagementDialog';
 import { useCategories } from '@/hooks/useCategories';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 interface Product {
@@ -158,39 +159,7 @@ return (
 
 return (
 <div className="min-h-screen bg-background">
-{/* Header */}
-<header className="bg-primary text-primary-foreground shadow-lg">
-<div className="container mx-auto px-4 py-4">
-<div className="flex items-center justify-between">
-<Link to="/" className="flex items-center gap-2 hover:opacity-80">
-<ArrowRight className="h-5 w-5" />
-<span>العودة</span>
-</Link>
-
-<div className="text-center">  
-          <h1 className="text-2xl font-bold">بنات</h1>  
-          <p className="text-sm opacity-90">Banat</p>  
-        </div>  
-          
-        <div className="flex items-center gap-4">  
-          <CartIcon />  
-          {user ? (  
-            <Link to="/auth">  
-              <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/20">  
-                الملف الشخصي  
-              </Button>  
-            </Link>  
-          ) : (  
-            <Link to="/auth">  
-              <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/20">  
-                تسجيل الدخول  
-              </Button>  
-            </Link>  
-          )}  
-        </div>  
-      </div>  
-    </div>  
-  </header>  
+<Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
   {/* Category Header */}  
   <div className="bg-accent/50 py-8">  
