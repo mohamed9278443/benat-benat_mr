@@ -26,11 +26,19 @@ interface Product {
   rating_count: number;
 }
 
+const CategoryCardSkeleton = () => (
+  <div className="bg-card rounded-lg overflow-hidden shadow-sm border animate-pulse">
+    <div className="w-full h-40 bg-muted"></div>
+    <div className="p-4">
+      <div className="h-6 w-3/4 bg-muted rounded"></div>
+    </div>
+  </div>
+);
+
 const BanatIndex = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
@@ -44,7 +52,7 @@ const BanatIndex = () => {
   useEffect(() => {
     checkUser();
     fetchProducts();
-    // Real-time subscriptions for categories and products
+
     const categoriesChannel = supabase
       .channel('categories-changes')
       .on('postgres_changes', {
@@ -55,6 +63,7 @@ const BanatIndex = () => {
         refetchCategories();
       })
       .subscribe();
+      
     const productsChannel = supabase
       .channel('products-changes')
       .on('postgres_changes', {
@@ -65,6 +74,7 @@ const BanatIndex = () => {
         fetchProducts();
       })
       .subscribe();
+
     return () => {
       supabase.removeChannel(categoriesChannel);
       supabase.removeChannel(productsChannel);
@@ -72,7 +82,6 @@ const BanatIndex = () => {
   }, []);
 
   useEffect(() => {
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -126,17 +135,13 @@ const BanatIndex = () => {
         description: 'حدث خطأ في تحميل المنتجات',
         variant: 'destructive',
       });
-    } finally {
-      setLoading(false);
     }
   };
 
-  // Search functionality
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
-  // Filter categories and products based on search
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (category.name_en && category.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -221,22 +226,10 @@ const BanatIndex = () => {
     });
   };
 
-  if (loading || categoriesLoading || settingsLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground mt-4">جاري التحميل...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <Header searchQuery={searchQuery} onSearchChange={handleSearch} />
-      {/* Hero Section */}
+      
       <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-12">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -261,7 +254,7 @@ const BanatIndex = () => {
           </div>
         </div>
       </section>
-      {/* Categories Section */}
+      
       <section id="categories" className="py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
@@ -281,7 +274,6 @@ const BanatIndex = () => {
             )}
           </div>
           
-          {/* Categories Results */}
           {searchQuery ? (
             <>
               {filteredCategories.length > 0 && (
@@ -338,20 +330,26 @@ const BanatIndex = () => {
             </>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {categories.map((category) => (
-                <CategoryCard
-                  key={category.id}
-                  category={category}
-                  isAdmin={isAdmin}
-                  onEdit={handleEditCategory}
-                />
-              ))}
+              {categoriesLoading ? (
+                Array.from({ length: 8 }).map((_, index) => (
+                  <CategoryCardSkeleton key={index} />
+                ))
+              ) : (
+                categories.map((category) => (
+                  <CategoryCard
+                    key={category.id}
+                    category={category}
+                    isAdmin={isAdmin}
+                    onEdit={handleEditCategory}
+                  />
+                ))
+              )}
             </div>
           )}
         </div>
       </section>
-      {/* Main Video Section */}
-      {settings.main_video_url && (
+      
+      {!settingsLoading && settings.main_video_url && (
         <section className="py-12 bg-accent/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 relative">
@@ -378,15 +376,15 @@ const BanatIndex = () => {
           </div>
         </section>
       )}
+
       <Footer />
-      {/* Category Management Dialog */}
+      
       <CategoryManagementDialog
         isOpen={isCategoryDialogOpen}
         onClose={() => setIsCategoryDialogOpen(false)}
         category={editingCategory}
         onSuccess={handleCategoryDialogSuccess}
       />
-      {/* Product Management Dialog */}
       <ProductManagementDialog
         isOpen={isProductDialogOpen}
         onClose={() => setIsProductDialogOpen(false)}
@@ -394,7 +392,6 @@ const BanatIndex = () => {
         categories={categories}
         onSuccess={handleProductDialogSuccess}
       />
-      {/* Video Edit Dialog */}
       <SiteSettingsDialog
         open={isVideoEditDialogOpen}
         onOpenChange={setIsVideoEditDialogOpen}
