@@ -355,7 +355,7 @@ const BanatIndex = () => {
         <section className="py-12 bg-accent/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 relative">
-              <h2 className="text-3xl font-bold text-foreground mb-4">فيديو توضيحي</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-4">فديو...</h2>
               <p className="text-muted-foreground">تعرفي أكثر على منتجاتنا</p>
               {isAdmin && (
                 <Button
