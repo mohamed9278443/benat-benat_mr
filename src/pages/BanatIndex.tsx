@@ -1,4 +1,4 @@
-import React, 'useState', 'useEffect' from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -9,16 +9,10 @@ import { CategoryCard } from '@/components/CategoryCard';
 import { MainVideo } from '@/components/MainVideo';
 import Header from '@/components/Header';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { useCategories } from '@/hooks/useCategories';
 import { CategoryManagementDialog } from '@/components/CategoryManagementDialog';
 import { ProductManagementDialog } from '@/components/ProductManagementDialog';
 import { SiteSettingsDialog } from '@/components/SiteSettingsDialog';
-
-interface Category {
-  id: string;
-  name: string;
-  name_en?: string;
-  image_url?: string;
-}
 
 interface Product {
   id: string;
@@ -32,19 +26,11 @@ interface Product {
   rating_count: number;
 }
 
-const CategoryCardSkeleton = () => (
-  <div className="bg-card rounded-lg overflow-hidden shadow-sm border animate-pulse">
-    <div className="w-full h-40 bg-muted"></div>
-    <div className="p-4">
-      <div className="h-6 w-3/4 bg-muted rounded"></div>
-    </div>
-  </div>
-);
-
 const BanatIndex = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
@@ -53,51 +39,32 @@ const BanatIndex = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
-
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        throw error;
-      }
-      setCategories(data || []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      toast({
-        title: 'خطأ',
-        description: 'حدث خطأ في تحميل الفئات',
-        variant: 'destructive',
-      });
-    } finally {
-      setCategoriesLoading(false);
-    }
-  };
+  const { categories, loading: categoriesLoading, refetch: refetchCategories } = useCategories();
 
   useEffect(() => {
     checkUser();
     fetchProducts();
-    fetchCategories();
-
+    // Real-time subscriptions for categories and products
     const categoriesChannel = supabase
       .channel('categories-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, 
-        () => fetchCategories()
-      )
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'categories'
+      }, () => {
+        refetchCategories();
+      })
       .subscribe();
-      
     const productsChannel = supabase
       .channel('products-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, 
-        () => fetchProducts()
-      )
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'products'
+      }, () => {
+        fetchProducts();
+      })
       .subscribe();
-
     return () => {
       supabase.removeChannel(categoriesChannel);
       supabase.removeChannel(productsChannel);
@@ -105,10 +72,13 @@ const BanatIndex = () => {
   }, []);
 
   useEffect(() => {
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        setTimeout(() => checkIfAdmin(session.user), 0);
+        setTimeout(() => {
+          checkIfAdmin(session.user);
+        }, 0);
       } else {
         setIsAdmin(false);
       }
@@ -156,12 +126,26 @@ const BanatIndex = () => {
         description: 'حدث خطأ في تحميل المنتجات',
         variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
   };
-  
+
+  // Search functionality
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
+
+  // Filter categories and products based on search
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (category.name_en && category.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   const signInWithGoogle = async () => {
     try {
@@ -204,31 +188,25 @@ const BanatIndex = () => {
     }
   };
 
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (category.name_en && category.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-  
   const handleAddCategory = () => {
+    console.log('Add category clicked');
     setEditingCategory(null);
     setIsCategoryDialogOpen(true);
   };
 
   const handleEditCategory = (category: any) => {
+    console.log('Edit category clicked:', category);
     setEditingCategory(category);
     setIsCategoryDialogOpen(true);
   };
 
   const handleAddProduct = () => {
+    console.log('Add product clicked');
     setIsProductDialogOpen(true);
   };
 
   const handleCategoryDialogSuccess = () => {
-    fetchCategories();
+    refetchCategories();
     toast({
       title: 'نجح العمل',
       description: 'تم حفظ الفئة بنجاح',
@@ -243,10 +221,22 @@ const BanatIndex = () => {
     });
   };
 
+  if (loading || categoriesLoading || settingsLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground mt-4">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
       <Header searchQuery={searchQuery} onSearchChange={handleSearch} />
-      
+      {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-12">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -271,16 +261,27 @@ const BanatIndex = () => {
           </div>
         </div>
       </section>
-      
+      {/* Categories Section */}
       <section id="categories" className="py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">
               {searchQuery ? 'نتائج البحث' : 'الفئات الرئيسية'}
+              {searchQuery && (
+                <span className="text-xl text-muted-foreground block mt-2">
+                  البحث عن: "{searchQuery}"
+                </span>
+              )}
             </h2>
-             {isAdmin && <Button className="gap-2" onClick={handleAddCategory}><Plus className="h-4 w-4" />إضافة فئة</Button>}
+            {isAdmin && (
+              <Button className="gap-2" onClick={handleAddCategory}>
+                <Plus className="h-4 w-4" />
+                إضافة فئة
+              </Button>
+            )}
           </div>
           
+          {/* Categories Results */}
           {searchQuery ? (
             <>
               {filteredCategories.length > 0 && (
@@ -337,30 +338,20 @@ const BanatIndex = () => {
             </>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {categoriesLoading ? (
-                Array.from({ length: 8 }).map((_, index) => (
-                  <CategoryCardSkeleton key={index} />
-                ))
-              ) : categories.length > 0 ? (
-                categories.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    category={category}
-                    isAdmin={isAdmin}
-                    onEdit={handleEditCategory}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-muted-foreground">لا توجد فئات لعرضها حالياً.</p>
-                </div>
-              )}
+              {categories.map((category) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  isAdmin={isAdmin}
+                  onEdit={handleEditCategory}
+                />
+              ))}
             </div>
           )}
         </div>
       </section>
-      
-      {!settingsLoading && settings.main_video_url && (
+      {/* Main Video Section */}
+      {settings.main_video_url && (
         <section className="py-12 bg-accent/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 relative">
@@ -387,12 +378,27 @@ const BanatIndex = () => {
           </div>
         </section>
       )}
-
       <Footer />
-      
-      <CategoryManagementDialog isOpen={isCategoryDialogOpen} onClose={() => setIsCategoryDialogOpen(false)} category={editingCategory} onSuccess={handleCategoryDialogSuccess}/>
-      <ProductManagementDialog isOpen={isProductDialogOpen} onClose={() => setIsProductDialogOpen(false)} product={null} categories={categories} onSuccess={handleProductDialogSuccess}/>
-      <SiteSettingsDialog open={isVideoEditDialogOpen} onOpenChange={setIsVideoEditDialogOpen}/>
+      {/* Category Management Dialog */}
+      <CategoryManagementDialog
+        isOpen={isCategoryDialogOpen}
+        onClose={() => setIsCategoryDialogOpen(false)}
+        category={editingCategory}
+        onSuccess={handleCategoryDialogSuccess}
+      />
+      {/* Product Management Dialog */}
+      <ProductManagementDialog
+        isOpen={isProductDialogOpen}
+        onClose={() => setIsProductDialogOpen(false)}
+        product={null}
+        categories={categories}
+        onSuccess={handleProductDialogSuccess}
+      />
+      {/* Video Edit Dialog */}
+      <SiteSettingsDialog
+        open={isVideoEditDialogOpen}
+        onOpenChange={setIsVideoEditDialogOpen}
+      />
     </div>
   );
 };
