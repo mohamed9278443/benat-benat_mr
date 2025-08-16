@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, 'useState', 'useEffect' from 'react';
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -9,10 +9,16 @@ import { CategoryCard } from '@/components/CategoryCard';
 import { MainVideo } from '@/components/MainVideo';
 import Header from '@/components/Header';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
-import { useCategories } from '@/hooks/useCategories';
 import { CategoryManagementDialog } from '@/components/CategoryManagementDialog';
 import { ProductManagementDialog } from '@/components/ProductManagementDialog';
 import { SiteSettingsDialog } from '@/components/SiteSettingsDialog';
+
+interface Category {
+  id: string;
+  name: string;
+  name_en?: string;
+  image_url?: string;
+}
 
 interface Product {
   id: string;
@@ -47,32 +53,49 @@ const BanatIndex = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const { categories, loading: categoriesLoading, refetch: refetchCategories } = useCategories();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        throw error;
+      }
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      toast({
+        title: 'خطأ',
+        description: 'حدث خطأ في تحميل الفئات',
+        variant: 'destructive',
+      });
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
 
   useEffect(() => {
     checkUser();
     fetchProducts();
+    fetchCategories();
 
     const categoriesChannel = supabase
       .channel('categories-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'categories'
-      }, () => {
-        refetchCategories();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, 
+        () => fetchCategories()
+      )
       .subscribe();
       
     const productsChannel = supabase
       .channel('products-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'products'
-      }, () => {
-        fetchProducts();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, 
+        () => fetchProducts()
+      )
       .subscribe();
 
     return () => {
@@ -85,9 +108,7 @@ const BanatIndex = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        setTimeout(() => {
-          checkIfAdmin(session.user);
-        }, 0);
+        setTimeout(() => checkIfAdmin(session.user), 0);
       } else {
         setIsAdmin(false);
       }
@@ -137,20 +158,10 @@ const BanatIndex = () => {
       });
     }
   };
-
+  
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
-
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (category.name_en && category.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
 
   const signInWithGoogle = async () => {
     try {
@@ -193,25 +204,31 @@ const BanatIndex = () => {
     }
   };
 
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (category.name_en && category.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+  
   const handleAddCategory = () => {
-    console.log('Add category clicked');
     setEditingCategory(null);
     setIsCategoryDialogOpen(true);
   };
 
   const handleEditCategory = (category: any) => {
-    console.log('Edit category clicked:', category);
     setEditingCategory(category);
     setIsCategoryDialogOpen(true);
   };
 
   const handleAddProduct = () => {
-    console.log('Add product clicked');
     setIsProductDialogOpen(true);
   };
 
   const handleCategoryDialogSuccess = () => {
-    refetchCategories();
+    fetchCategories();
     toast({
       title: 'نجح العمل',
       description: 'تم حفظ الفئة بنجاح',
@@ -260,18 +277,8 @@ const BanatIndex = () => {
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">
               {searchQuery ? 'نتائج البحث' : 'الفئات الرئيسية'}
-              {searchQuery && (
-                <span className="text-xl text-muted-foreground block mt-2">
-                  البحث عن: "{searchQuery}"
-                </span>
-              )}
             </h2>
-            {isAdmin && (
-              <Button className="gap-2" onClick={handleAddCategory}>
-                <Plus className="h-4 w-4" />
-                إضافة فئة
-              </Button>
-            )}
+             {isAdmin && <Button className="gap-2" onClick={handleAddCategory}><Plus className="h-4 w-4" />إضافة فئة</Button>}
           </div>
           
           {searchQuery ? (
@@ -334,7 +341,7 @@ const BanatIndex = () => {
                 Array.from({ length: 8 }).map((_, index) => (
                   <CategoryCardSkeleton key={index} />
                 ))
-              ) : (
+              ) : categories.length > 0 ? (
                 categories.map((category) => (
                   <CategoryCard
                     key={category.id}
@@ -343,6 +350,10 @@ const BanatIndex = () => {
                     onEdit={handleEditCategory}
                   />
                 ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-muted-foreground">لا توجد فئات لعرضها حالياً.</p>
+                </div>
               )}
             </div>
           )}
@@ -379,23 +390,9 @@ const BanatIndex = () => {
 
       <Footer />
       
-      <CategoryManagementDialog
-        isOpen={isCategoryDialogOpen}
-        onClose={() => setIsCategoryDialogOpen(false)}
-        category={editingCategory}
-        onSuccess={handleCategoryDialogSuccess}
-      />
-      <ProductManagementDialog
-        isOpen={isProductDialogOpen}
-        onClose={() => setIsProductDialogOpen(false)}
-        product={null}
-        categories={categories}
-        onSuccess={handleProductDialogSuccess}
-      />
-      <SiteSettingsDialog
-        open={isVideoEditDialogOpen}
-        onOpenChange={setIsVideoEditDialogOpen}
-      />
+      <CategoryManagementDialog isOpen={isCategoryDialogOpen} onClose={() => setIsCategoryDialogOpen(false)} category={editingCategory} onSuccess={handleCategoryDialogSuccess}/>
+      <ProductManagementDialog isOpen={isProductDialogOpen} onClose={() => setIsProductDialogOpen(false)} product={null} categories={categories} onSuccess={handleProductDialogSuccess}/>
+      <SiteSettingsDialog open={isVideoEditDialogOpen} onOpenChange={setIsVideoEditDialogOpen}/>
     </div>
   );
 };
