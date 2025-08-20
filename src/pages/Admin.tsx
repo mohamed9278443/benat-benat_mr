@@ -20,6 +20,7 @@ import { VideoUpload } from "@/components/VideoUpload";
 import { SiteSettingsDialog } from "@/components/SiteSettingsDialog";
 import { useCategories } from "@/hooks/useCategories";
 import Header from "@/components/Header";
+import footer from "@/components/Footer";
 
 interface Product {
   id: string;
