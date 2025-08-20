@@ -20,6 +20,7 @@ import { VideoUpload } from "@/components/VideoUpload";
 import { SiteSettingsDialog } from "@/components/SiteSettingsDialog";
 import { useCategories } from "@/hooks/useCategories";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface Product {
   id: string;
@@ -915,6 +916,7 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+     <Footer />
     </div>
   );
 };
